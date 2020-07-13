@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
@@ -23,16 +24,28 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+
+
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
         // DB를 참고
         // $db참고내용 =[]
 
+        //9시 크롤링
         $schedule->call(function(){
             Log::info("test");
             Log::warning("test");
+        })->at('9:30');
+
+
+        //매 분 확인
+        $schedule->call(function (){
+            //$test = App\User::All();
+
         })->everyMinute();
+
+
 
 //        for($db참고내용){
 //            $schedule->call()-> dailyAt($db참고내영[1]);
