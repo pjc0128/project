@@ -11,16 +11,19 @@ class TestMailController extends Controller
     function testAPI()
     {
         $url = 'http://crm3.saramin.co.kr/mail_api/automails';
+        $autotype = 'A0188';
+        $cmpncode = 12031;
+        $sender_email = 'pcc2242@saramin.co.kr';
+        $use_event_solution = 'y';
 
         $data = array(
-            'autotype' => 'A0188',
-            'cmpncode' => 12031,
-            /*받는사람*/
+            'autotype' => $autotype,
+            'cmpncode' => $cmpncode,
+            'sender_email' => $sender_email,
+            'use_event_solution' => $use_event_solution,
             'email' => 'pjc0128@naver.co.kr',
-            'sender_email' => 'pcc2242@saramin.co.kr',
             'title' => '외부메일',
-            'use_event_solution' => 'y',
-            'replace15' => 'testContent'
+            'replace15' => "코로나19로 일상 전반에 걸쳐 ‘언택트’"
         );
 
         $ch = curl_init();
