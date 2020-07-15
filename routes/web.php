@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\TestMailController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,4 +19,12 @@ Route::get('/', function () {
 
 Route::get('/test', function () {
     return view('test');
+});
+
+Route::get('/testMail', function () {
+    $mc = new TestMailController();
+
+    $response = $mc->testAPI();
+
+    return view('testMail', ['response'=>$response]);
 });

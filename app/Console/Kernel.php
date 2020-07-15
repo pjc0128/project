@@ -4,7 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
@@ -36,13 +35,16 @@ class Kernel extends ConsoleKernel
         $schedule->call(function(){
             Log::info("test");
             Log::warning("test");
-        })->at('9:30');
+        })->at('4:15');
 
 
         //매 분 확인
         $schedule->call(function (){
             //$test = App\User::All();
 
+
+            Log::info("test");
+            Log::warning("test");
         })->everyMinute();
 
 
