@@ -21,7 +21,7 @@ class TestMailController extends Controller
             'cmpncode' => $cmpncode,
             'sender_email' => $sender_email,
             'use_event_solution' => $use_event_solution,
-            'email' => 'pjc0128@naver.co.kr',
+            'email' => 'pjc0128@naver.com',
             'title' => '외부메일',
             'replace15' => "코로나19로 일상 전반에 걸쳐 ‘언택트’"
         );
