@@ -2,9 +2,12 @@
 
 namespace App\Console;
 
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Clawler;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -33,19 +36,36 @@ class Kernel extends ConsoleKernel
 
         //9시 크롤링
         $schedule->call(function(){
-            Log::info("test");
-            Log::warning("test");
-        })->at('4:15');
+            $c = new Clawler();
+            $articles = $c->clawling();
+
+
+            echo route('/article/store', ['post' => 1]);
+
+
+//            $ac = new ArticleController();
+//            foreach ($articles as $article){
+//                $ac->store($article);
+//            }
+        })->everyMinute();
 
 
         //매 분 확인
-        $schedule->call(function (){
-            //$test = App\User::All();
+//        $schedule->call(function (){
+//            //$test = App\User::All();
+//
+//            Log::info('test!@#!@#!@');
+//            Log::info("test");
+//            Log::warning("test");
+//        })->everyMinute();
 
-
-            Log::info("test");
-            Log::warning("test");
-        })->everyMinute();
+//메일 테스트
+//        $schedule->call(function (){
+//            $mc = new TestMailController();
+//
+//            $mc->testAPI();
+//
+//        })->everyMinute();
 
 
 

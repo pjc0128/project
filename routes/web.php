@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestMailController;
+use App\Http\Controllers\Clawler;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,3 +29,15 @@ Route::get('/testMail', function () {
 
     return view('testMail', ['response'=>$response]);
 });
+
+Route::get('/testClawling', function(){
+    $c = new Clawler();
+
+    $articles = $c->clawling();
+
+    return view('testClawling', ['articles'=>$articles]);
+});
+
+Route::get('/article', 'ArticleController@index');
+Route::get('/article/store', 'ArticleController@store');
+

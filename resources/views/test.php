@@ -22,7 +22,6 @@ $txt=$snoopy->results;
 //    }
 //}
 
-
 $urlArr = "";
 $urlRex = '/\<dt\>(.*)\<\/dt\>/';
 //$urlRex = '/\<a.*?href="(.*)\>/';
@@ -30,16 +29,13 @@ $urlRex = '/\<dt\>(.*)\<\/dt\>/';
 preg_match_all($urlRex,$txt, $urlArr);
 
 
+$linkRex ='/\<a.*?href="(.*)\>/';
 
-for($i = 0 ; $i <count($urlArr) ; $i++){
-    for($j = 0 ; $j < count($urlArr[$i]); $j++){
-        print '$url['.$i.']['.$j.'] = '.strip_tags($urlArr[$i][$j]).'<br>';
-
-        $linkRex ='/\<a.*?href="(.*)\>/';
-
-
+    for($j = 0 ; $j < count($urlArr[1]); $j++){
+        print '$url[1]['.$j.'] = '.strip_tags($urlArr[1][$j]).'<br>';
+        print '$url[1]['.$j.'] = '.preg_replace('/<a href="([^"]+)">.+/', '$1', $urlArr[1][$j]).'<br>';
     }
-}
+
 
 
 //print '$url['.$i.']['.$j.'] = '.substr($url, strpos($url, '\>'), strrpos($url, '\<') ).'<br>';
