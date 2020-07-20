@@ -75,30 +75,11 @@ class TestMailController extends Controller
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response =  curl_exec($ch);
+        $result = json_decode($response);
 
-
-//        Log::info(json_decode($response,1));
-//        Log::info(print_r($response,1));
-//        trigger_error($response);
-
-//        if(curl_error($ch)){
-//            $curl_data = null;
-//        } else {
-//            $curl_data = $response;
-//        }
-//        curl_close($ch);
-//
-//        $json_data = json_decode($curl_data, true);
-//        if($json_data["code"==200]){
-//            Log::info("메일발송성공");
-//        }else{
-//            Log::info("메일발송실패");
-//        }
-
-
-
-        return $response;
+        return $result->code;
     }
 }

@@ -74,15 +74,19 @@ class Kernel extends ConsoleKernel
 //        })->everyMinute();
 
 //메일 테스트
+        /*
+         * guzzle
+         */
         $schedule->call(function (){
             $email ='pjc0128@naver.com';
             $articles = Article::all();
 
             $mc = new TestMailController();
 
-            $response = $mc->sendMail($articles, $email);
+            $result = $mc->sendMail($articles, $email);
 
-            if($response->code == 200){
+            $mh = new MailHistoryController();
+            if($result == 200){
 
             }else{
 
