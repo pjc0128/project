@@ -15,11 +15,12 @@ class CreateArticlesTable extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id('id');
+            $table->bigInteger('mail_content_id');
             $table->string('title');
             $table->string('url');
             $table->timestamps();
 
-            $table->foreign('id')->references('id')->on('mail_contents');
+            $table->foreign('mail_content_id')->references('id')->on('mail_contents');
         });
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Article;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\Clawler;
@@ -23,9 +24,13 @@ Route::get('/test', function () {
 });
 
 Route::get('/testMail', function () {
+    $email =' ';
+    $articles = Article::all();
+    //Log::info(var_dump($articles));
+    //$articles = Article::latest()->where('mail_content_id',9)->get();
     $mc = new TestMailController();
-
-    $response = $mc->testAPI();
+    //$mc->testAPI();
+    $response = $mc->sendMail($articles, $email);
 
     return view('testMail', ['response'=>$response]);
 });

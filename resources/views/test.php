@@ -10,31 +10,31 @@ $url = "http://edu.donga.com/?p=article&search=top&stx=%EC%B7%A8%EC%97%85";
 
 
 
-$snoopy->fetch($url);
-$txt=$snoopy->results;
-
-//$title="";
-//$titleRex="/\<strong\>(.*)\<\/strong\>/";
-//preg_match_all($titleRex,$txt, $title);
-//for($i = 0; $i < count($title) ; $i++){
-//    for($j = 0 ; $j < count($title[$i]); $j++){
-//        print '$title['.$i.']['.$j.'] = '.strip_tags($title[$i][$j]).'<br>';
+//$snoopy->fetch($url);
+//$txt=$snoopy->results;
+//
+////$title="";
+////$titleRex="/\<strong\>(.*)\<\/strong\>/";
+////preg_match_all($titleRex,$txt, $title);
+////for($i = 0; $i < count($title) ; $i++){
+////    for($j = 0 ; $j < count($title[$i]); $j++){
+////        print '$title['.$i.']['.$j.'] = '.strip_tags($title[$i][$j]).'<br>';
+////    }
+////}
+//
+//$urlArr = "";
+//$urlRex = '/\<dt\>(.*)\<\/dt\>/';
+////$urlRex = '/\<a.*?href="(.*)\>/';
+////$urlRex='/^<a.*?href=(["\'])(.*?)\1.*$/';
+//preg_match_all($urlRex,$txt, $urlArr);
+//
+//
+//$linkRex ='/\<a.*?href="(.*)\>/';
+//
+//    for($j = 0 ; $j < count($urlArr[1]); $j++){
+//        print '$url[1]['.$j.'] = '.strip_tags($urlArr[1][$j]).'<br>';
+//        print '$url[1]['.$j.'] = '.preg_replace('/<a href="([^"]+)">.+/', '$1', $urlArr[1][$j]).'<br>';
 //    }
-//}
-
-$urlArr = "";
-$urlRex = '/\<dt\>(.*)\<\/dt\>/';
-//$urlRex = '/\<a.*?href="(.*)\>/';
-//$urlRex='/^<a.*?href=(["\'])(.*?)\1.*$/';
-preg_match_all($urlRex,$txt, $urlArr);
-
-
-$linkRex ='/\<a.*?href="(.*)\>/';
-
-    for($j = 0 ; $j < count($urlArr[1]); $j++){
-        print '$url[1]['.$j.'] = '.strip_tags($urlArr[1][$j]).'<br>';
-        print '$url[1]['.$j.'] = '.preg_replace('/<a href="([^"]+)">.+/', '$1', $urlArr[1][$j]).'<br>';
-    }
 
 
 
