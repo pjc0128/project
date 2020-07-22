@@ -34,4 +34,20 @@ class Clawler
 
         return $articles;
     }
+
+    function clawling2($url)
+    {
+        $snoopy = new Snoopy();
+
+        $snoopy->fetch($url);
+        $txt = $snoopy->results;
+
+        $urlArr = "";
+        $rex = '/\<dt\>(.*)\<\/dt\>/';
+        preg_match_all($rex, $txt, $urlArr);
+
+
+
+        return $articles;
+    }
 }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Article;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\Clawler;
@@ -41,6 +43,23 @@ Route::get('/testClawling', function(){
     $articles = $c->clawling();
 
     return view('testClawling', ['articles'=>$articles]);
+});
+
+Route::get('/gateway', function(){
+    $articleNo = $_GET['articleNo'];
+
+    //$article = Article::where('id', $articleNo)->first();
+    $article = DB::select('select mail_history_id, ');
+
+    $pre = 'http://edu.donga.com';
+    $url = $article->url;
+    $path = $pre.$url;
+    $mail_historyid ='';
+    DB::insert('insert into access_histories (mail_history_id, created_at)
+                      value = ('.$mail_historyid.', SYSDATE()');
+
+
+    return redirect()->away($path);
 });
 
 Route::get('/article', 'ArticleController@index');

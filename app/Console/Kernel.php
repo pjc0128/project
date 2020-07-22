@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
          * 시간설정
          */
         //9시 크롤링
-        $schedule->call(function(){
+        $schedule->call(function (){
             $c = new Clawler();
             $articles = $c->clawling();
 
@@ -50,11 +50,11 @@ class Kernel extends ConsoleKernel
 
             $ac = new ArticleController();
 
-            $min =date("Y-m-d-H-i-s", strtotime("-1 day"));
+            $min = date("Y-m-d-H-i-s", strtotime("-1 day"));
             foreach ($articles as $article){
                 $date = date("Y-m-d-H-i-s", strtotime($article['date']));
 
-                if($date > $min){
+                if($date < $min){
                     if($mcc == null){
                         $mcc = new MailContentController();
                         $mail_request = new Request();
@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
                     $count++;
                 }
 
-                if($count>10){
+                if($count>=10){
                     return;
                 }
             }
@@ -126,8 +126,8 @@ class Kernel extends ConsoleKernel
 
                     }
 
-                    DB::insert('insert into mail_histories (user_id, mail_id, success)
-                                      value('.$user->id.', '.$mail_id.', \''.$success.'\')');
+                    DB::insert('insert into mail_histories (user_id, mail_id, success, created_at)
+                                      value('.$user->id.', '.$mail_id.', \''.$success.'\', SYSDATE())');
                 }
             }
         })->everyMinute();

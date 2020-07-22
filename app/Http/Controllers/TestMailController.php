@@ -47,8 +47,7 @@ class TestMailController extends Controller
     }
 
     function sendMail($articles, $email){
-
-        $pre = 'http://edu.donga.com';
+        $gateway = 'http://127.0.0.1:8000/gateway';
         $url = 'http://crm3.saramin.co.kr/mail_api/automails';
         $autotype = 'A0188';
         $cmpncode = 12031;
@@ -57,7 +56,8 @@ class TestMailController extends Controller
 
         $content = '';
         foreach ($articles as $article){
-            $content .= "<a href='".$pre.$article['url']."'>".$article['title']."</a><br>";
+            //$content .= "<a href='".$pre.$article['url']."'>".$article['title']."</a><br>";
+            $content .= "<a href='".$gateway."?articleNo=".$article['id']."'>".$article['title']."</a><br>";
         }
 
         $data = array(
