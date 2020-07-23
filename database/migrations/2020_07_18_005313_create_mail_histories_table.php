@@ -15,13 +15,14 @@ class CreateMailHistoriesTable extends Migration
     {
         Schema::create('mail_histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
-            $table->bigInteger('mail_id');
-            $table->string('success');
+            $table->bigInteger('mail_id')->unsigned()->index();;
+            $table->bigInteger('user_id')->unsigned()->index();;
+            $table->string('read_YN')->default('N');
             $table->timestamps();
 
-            //$table->foreign('user_id')->references('id')->on('users');
-            //$table->foreign('mail_id')->references('id')->on('mail_contents');
+            $table->foreign('mail_id')->references('id')->on('mail_contents');
+            $table->foreign('user_id')->references('id')->on('users');
+
         });
     }
 

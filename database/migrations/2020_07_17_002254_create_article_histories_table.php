@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccessHistoriesTable extends Migration
+class CreateArticleHistoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateAccessHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('access_histories', function (Blueprint $table) {
+        Schema::create('article_histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('mail_history_id');
+            $table->bigInteger('article_id')->unsigned()->index();
+            $table->string('type');
             $table->timestamps();
 
-            //$table->foreign('mail_history_id')->references('id')->on('mail_histories');
+            $table->foreign('article_id')->references('id')->on('articles');
         });
     }
 
@@ -29,6 +30,6 @@ class CreateAccessHistoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('access_histories');
+        Schema::dropIfExists('article_histories');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateArticlesTable extends Migration
+class CreateMailContentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateArticlesTable extends Migration
      */
     public function up()
     {
-        Schema::create('articles', function (Blueprint $table) {
-            $table->id('id');
-            $table->bigInteger('mail_content_id');
-            $table->string('title');
-            $table->string('url');
+        Schema::create('mail_contents', function (Blueprint $table) {
+            $table->id();
+            $table->integer('total');
             $table->timestamps();
-
-            //$table->foreign('mail_content_id')->references('id')->on('mail_contents');
         });
     }
 
@@ -31,6 +27,6 @@ class CreateArticlesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('articles');
+        Schema::dropIfExists('mail_contents');
     }
 }

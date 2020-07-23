@@ -65,7 +65,7 @@ class TestMailController extends Controller
             'cmpncode' => $cmpncode,
             'sender_email' => $sender_email,
             'use_event_solution' => $use_event_solution,
-            'email' => 'pjc0128@naver.com',
+            'email' => $email,
             'title' => date("Y/m/d").'사람인 기사',
             'replace15' => $content
         );

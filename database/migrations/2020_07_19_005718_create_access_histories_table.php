@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMailContentsTable extends Migration
+class CreateAccessHistoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateMailContentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('mail_contents', function (Blueprint $table) {
+        Schema::create('access_histories', function (Blueprint $table) {
             $table->id();
-            $table->String('type');
+            $table->bigInteger('mail_history_id')->unsigned()->index();;
             $table->timestamps();
+
+            $table->foreign('mail_history_id')->references('id')->on('mail_histories');
         });
     }
 
@@ -27,6 +29,6 @@ class CreateMailContentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mail_contents');
+        Schema::dropIfExists('access_histories');
     }
 }

@@ -47,7 +47,9 @@ Route::get('/testClawling', function(){
 
 Route::get('/gateway', function(){
     $articleNo = $_GET['articleNo'];
-
+//    IPv4 주소 . . . . . . . . . : 172.20.38.65
+//   서브넷 마스크 . . . . . . . : 255.255.255.0
+//   기본 게이트웨이 . . . . . . : 172.20.38.1
     //$article = Article::where('id', $articleNo)->first();
     $article = DB::select('select mail_history_id, ');
 

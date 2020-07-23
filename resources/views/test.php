@@ -6,15 +6,15 @@ $snoopy = new App\Http\Controllers\Snoopy();
 $url = "http://edu.donga.com/?p=article&search=top&stx=%EC%B7%A8%EC%97%85";
 $url2 = "http://edu.donga.com/";
 //연합뉴스
-$url = "https://www.sedaily.com/NewsVIew/1Z5AUCJ17X";
-
-$snoopy->fetch($url);
-$txt=$snoopy->results;
-
-print $txt;
+//$url = "https://www.sedaily.com/NewsVIew/1Z5AUCJ17X";
+//
+//$snoopy->fetch($url);
+//$txt=$snoopy->results;
+//
+//print $txt;
 $deletedURL = 'http://edu.donga.com/?p=article&ps=view&at_no=20200721111551855555&titleGbn=&page=1';
 
-Article::all();
+
 
 
 //if(!@fopen($deletedURL, "r")){
@@ -58,7 +58,7 @@ Article::all();
 //print $test.'<br>';
 //print 'test123';
 //echo $_SERVER["DOCUMENT_ROOT"];
-//echo "현재 날짜 : ". date("Y-m-d-H-i-s")."<br/>";
+echo "현재 날짜 : ". date("Y-m-d-H-i-s")."<br/>";
 
 ?>
 
