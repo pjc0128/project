@@ -4,10 +4,14 @@ namespace App\Console;
 
 use App\Article;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ArticleHistoryController;
 use App\Http\Controllers\Clawler;
+use App\Http\Controllers\MailArticleRelationController;
 use App\Http\Controllers\MailContentController;
 use App\Http\Controllers\MailHistoryController;
 use App\Http\Controllers\TestMailController;
+use App\Http\Controllers\UserController;
+use App\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
@@ -42,36 +46,35 @@ class Kernel extends ConsoleKernel
         //9시 크롤링
         $schedule->call(function (){
             $c = new Clawler();
+            $ac = new ArticleController();
+            $ahc = new ArticleHistoryController();
+            $mcc = new MailContentController();
+            $marc = new MailArticleRelationController();
+
+            $count = 0;
+            $mail_content_id = 0;
+
             $articles = $c->clawling();
 
-            $mcc = null;
-            $last_index = 0;
-            $count = 0;
-
-            $ac = new ArticleController();
-
             $min = date("Y-m-d-H-i-s", strtotime("-1 day"));
+
             foreach ($articles as $article){
                 $date = date("Y-m-d-H-i-s", strtotime($article['date']));
 
                 if($date < $min){
-                    if($mcc == null){
-                        $mcc = new MailContentController();
-                        $mail_request = new Request();
-                        $mail_request->setMethod('POST');
-                        $mail_request->request->add(['type'=>'D']);
-
-                        $last_index = $mcc->store($mail_request);
+                    if($mail_content_id == 0){
+                        $mail_content_id = $mcc->store();
                     }
 
-                    $article_request = new Request();
-                    $article_request->setMethod('POST');
-                    $article_request->request->add(['title'=>$article['title'],
-                        'url'=>$article['url'],
-                        'mail_content_id'=>$last_index
-                    ]);
+                    $article_id = $ac->store($article);
 
-                    $ac->store($article_request);
+                    $article_history = (['article_id' => $article_id,
+                                         'type' => 'I']);
+
+                    $article_history_id = $ahc->store($article_history);
+
+                    $marc->store($mail_content_id, $article_history_id);
+
                     $count++;
                 }
 
@@ -79,7 +82,7 @@ class Kernel extends ConsoleKernel
                     return;
                 }
             }
-        })->at('9:00');
+        })->at("9:00");
 
 
         //매 분 확인
@@ -89,45 +92,48 @@ class Kernel extends ConsoleKernel
          *
          */
         $schedule->call(function (){
-            $now = now();
-            $result = DB::select('select u.id, u.email, u.name, sec_to_time(avg(time_to_sec(ah.created_at))) as time
-                                        from users u
-                                        left join mail_histories mh on (mh.user_id = u.id)
-                                        left join access_histories ah on (ah.mail_history_id = mh.id)
-                                        group by u.id');
-            $mc = null;
-            $mhc = null;
+            $ac = new ArticleController();
+            $uc = new UserController();
+            $mc = new TestMailController();
+            $mhc = new MailHistoryController();
+            $mcc = new MailContentController();
 
-            foreach($result as $user){
+            $now = now();
+            $users = $uc->index();
+
+            Log::info('users : '.$users);
+            foreach($users as $user){
+
+                if($user->time == null){
+                    $user->time = "10:00:00";
+                }
+                Log::info("time : ".$user->time);
+
                 if($now > $user->time){
+                    $mail = $mcc->selectLatest();
+
                     $email = $user->email;
 
-                    $articles = Article::all();
+                    $articles = $ac->selectArticles($mail->mail_id);
 
-                    //mail_id
-                    $mail_id = 1;
-
-                    if($mc == null){
-                        $mc = new TestMailController();
-                    }
-
-                    $result = $mc->sendMail($articles, $email);
-
-                    if($mhc == null){
-                        $mhc = new MailHistoryController();
-                    }
-
-                    $success = 'N';
-
-                    if($result == 200){
-                        $success = 'Y';
-                    }else{
-                        /**텔레그램 발송 추가 **/
-
-                    }
-
-                    DB::insert('insert into mail_histories (user_id, mail_id, success, created_at)
-                                      value('.$user->id.', '.$mail_id.', \''.$success.'\', SYSDATE())');
+                    Log::info('mail : '.$mail);
+                    Log::info('articles : '.$articles);
+//
+//
+//
+//                    $result = $mc->sendMail($articles, $email);
+//
+//                    $success = 'N';
+//
+//                    if($result == 200){
+//                        $success = 'Y';
+//                    }else{
+//                        /**텔레그램 발송 추가 **/
+//
+//                    }
+//
+//                    DB::insert('insert into mail_histories (user_id, mail_id, success, created_at)
+//                                      value('.$user->id.', '.$mail_id.', \''.$success.'\', SYSDATE())');
                 }
             }
         })->everyMinute();

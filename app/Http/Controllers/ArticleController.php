@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ArticleController extends Controller
 {
+
+    protected $articles;
+
+
+
     /**
      * Display a listing of the resource.
      *
@@ -34,13 +40,15 @@ class ArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($_article)
     {
         $article = Article::create([
-           'title' => $request->input('title'),
-            'url' => $request->input('url'),
-            'mail_content_id' => $request->input('mail_content_id')
+           'title' => $_article['title'],
+            'url' => $_article['url'],
+            'created_at' => now()
         ]);
+
+        return $article->id;
     }
 
     /**
@@ -86,5 +94,12 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function selectArticles($id)
+    {
+        $articles = Article::join('mail_contents', 'mail_id', '=', 'articles.mail_id')->where('mail_id', '=', $id);
+
+        return $articles;
     }
 }

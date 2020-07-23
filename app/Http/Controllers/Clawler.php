@@ -35,7 +35,7 @@ class Clawler
         return $articles;
     }
 
-    function clawling2($url)
+    function checkDelete($url)
     {
         $snoopy = new Snoopy();
 

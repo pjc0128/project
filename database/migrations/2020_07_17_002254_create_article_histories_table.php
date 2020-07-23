@@ -16,7 +16,7 @@ class CreateArticleHistoriesTable extends Migration
         Schema::create('article_histories', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('article_id')->unsigned()->index();
-            $table->string('type');
+            $table->string('type')->default('I');
             $table->timestamps();
 
             $table->foreign('article_id')->references('id')->on('articles');

@@ -58,7 +58,7 @@ $deletedURL = 'http://edu.donga.com/?p=article&ps=view&at_no=2020072111155185555
 //print $test.'<br>';
 //print 'test123';
 //echo $_SERVER["DOCUMENT_ROOT"];
-echo "현재 날짜 : ". date("Y-m-d-H-i-s")."<br/>";
+//echo "현재 날짜 : ". date("Y-m-d-H-i-s")."<br/>";
 
 ?>
 

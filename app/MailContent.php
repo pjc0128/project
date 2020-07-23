@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MailContent extends Model
 {
-    protected $fillable = ['type'];
+    protected $fillable = ['total'];
 
     public function mail_article_relations(){
 

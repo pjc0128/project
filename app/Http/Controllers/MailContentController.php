@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MailContent;
+use App\MailHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -35,10 +36,10 @@ class MailContentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         $mail_content = MailContent::create([
-            'type' => $request->input('type')
+            'created_at' => now()
         ]);
 
         return $mail_content->id;
@@ -87,5 +88,11 @@ class MailContentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function selectLatest(){
+        $mail_contents = MailHistory::latest('created_at')->first();
+
+        return $mail_contents;
     }
 }
