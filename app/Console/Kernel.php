@@ -41,7 +41,6 @@ class Kernel extends ConsoleKernel
     {
         /*
          * 트랜젝션처리
-         * 시간설정
          */
         //9시 크롤링
         $schedule->call(function (){
@@ -61,7 +60,7 @@ class Kernel extends ConsoleKernel
             foreach ($articles as $article){
                 $date = date("Y-m-d-H-i-s", strtotime($article['date']));
 
-                if($date < $min){
+                if($date > $min){
                     if($mail_content_id == 0){
                         $mail_content_id = $mcc->store();
                     }
@@ -84,7 +83,6 @@ class Kernel extends ConsoleKernel
             }
         })->at("9:00");
 
-
         //매 분 확인
         /*
          * articles 전부 -> 최근일자
@@ -101,13 +99,11 @@ class Kernel extends ConsoleKernel
             $now = now();
             $users = $uc->index();
 
-            Log::info('users : '.$users);
             foreach($users as $user){
 
                 if($user->time == null){
                     $user->time = "10:00:00";
                 }
-                Log::info("time : ".$user->time);
 
                 if($now > $user->time){
                     $mail = $mcc->selectLatest();
@@ -116,8 +112,8 @@ class Kernel extends ConsoleKernel
 
                     $articles = $ac->selectArticles($mail->mail_id);
 
-                    Log::info('mail : '.$mail);
-                    Log::info('articles : '.$articles);
+//                    Log::info('mail : '.$mail);
+//                    Log::info('articles : '.$articles);
 //
 //
 //

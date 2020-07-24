@@ -91,7 +91,7 @@ class MailContentController extends Controller
     }
 
     public function selectLatest(){
-        $mail_contents = MailHistory::latest('created_at')->first();
+        $mail_contents = MailContent::latest('created_at')->first();
 
         return $mail_contents;
     }

@@ -2,26 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\AccessHistory;
+use App\MailContent;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+
 class UserController extends Controller
 {
+
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+
+
     public function index(){
-//            select u.id, u.email, u.name, sec_to_time(avg(time_to_sec(ah.created_at))) as time
-//            from users u
-//            left join mail_histories mh on (mh.user_id = u.id)
-//            left join (select mail_history_id, created_at
-//                       from access_histories
-//            where created_at > DATE_SUB(SYSDATE(), INTERVAL 7 DAY)) ah on (ah.mail_history_id = mh.id)
-//            group by u.id;
-        $users = User::select('users.id', 'users.email', 'users.name', DB::raw('sec_to_time(avg(time_to_sec(ah.created_at))) as time'))
+        $access = DB::table('access_histories')
+            ->select('access_histories.mail_history_id'
+                           , 'access_histories.created_at')
+            ->where('access_histories.created_at', '>', DB::raw('DATE_SUB(SYSDATE(), INTERVAL 7 DAY)'));
+
+        $users = User::select('users.id'
+                            , 'users.email'
+                            , 'users.name'
+                            , DB::raw('MAX(mh.mail_id) as max')
+                            , DB::raw('sec_to_time(avg(time_to_sec(access_histories.created_at))) as time'))
+            ->addSelect(['last_content' => MailContent::select(DB::raw('MAX(mail_contents.id) as last_content'))])
             ->leftJoin('mail_histories as mh', 'mh.user_id', '=', 'users.id')
-            ->leftJoin('access_histories as ah', 'ah.mail_history_id', '=', 'mh.id')
-            ->where('ah.created_at', '>', DB::raw('DATE_SUB(SYSDATE(), INTERVAL 7 DAY)'))
+            ->leftJoinSub($access, 'access_histories', function($join){
+                $join->on('access_histories.mail_history_id', '=', 'mh.id');
+            })
             ->groupBy('users.id')
+            ->havingRaw('max is null || max != last_content')
             ->get();
 
         return $users;
