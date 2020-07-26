@@ -50,6 +50,7 @@ class Kernel extends ConsoleKernel
             $mcc = new MailContentController();
             $marc = new MailArticleRelationController();
 
+
             $count = 0;
             $mail_content_id = 0;
 
@@ -83,39 +84,29 @@ class Kernel extends ConsoleKernel
             }
         })->at("9:00");
 
-        //매 분 확인
-        /*
-         * articles 전부 -> 최근일자
-         * 메일발송 전부 -> 발송내역 없는 인원에게
-         *
-         */
-        $schedule->call(function (){
-            $ac = new ArticleController();
-            $uc = new UserController();
-            $mc = new TestMailController();
-            $mhc = new MailHistoryController();
-            $mcc = new MailContentController();
-
-            $now = now();
-            $users = $uc->index();
-
-            foreach($users as $user){
-
-                if($user->time == null){
-                    $user->time = "10:00:00";
-                }
-
-                if($now > $user->time){
-                    $mail = $mcc->selectLatest();
-
-                    $email = $user->email;
-
-                    $articles = $ac->selectArticles($mail->mail_id);
-
-//                    Log::info('mail : '.$mail);
-//                    Log::info('articles : '.$articles);
+//        $schedule->call(function (){
+//            $ac = new ArticleController();
+//            $uc = new UserController();
+//            $mc = new TestMailController();
+//            $mhc = new MailHistoryController();
+//            $mcc = new MailContentController();
 //
 //
+//            $now = now();
+//            $users = $uc->index();
+//
+//            foreach($users as $user){
+//
+//                if($user->time == null){
+//                    $user->time = "10:00:00";
+//                }
+//
+//                if($now > $user->time){
+//                    $mail = $mcc->selectLatest();
+//
+//                    $email = $user->email;
+//
+//                    $articles = $ac->selectArticles($mail->mail_id);
 //
 //                    $result = $mc->sendMail($articles, $email);
 //
@@ -128,41 +119,39 @@ class Kernel extends ConsoleKernel
 //
 //                    }
 //
-//                    DB::insert('insert into mail_histories (user_id, mail_id, success, created_at)
-//                                      value('.$user->id.', '.$mail_id.', \''.$success.'\', SYSDATE())');
-                }
-            }
-        })->everyMinute();
-
-//메일 테스트
-        /*
-         * guzzle
-         */
-//        $schedule->call(function (){
-//            $email ='pjc0128@naver.com';
-//            $articles = Article::all();
+//                    $mail_history = ([
+//                        'user_id' => $user->id,
+//                        'mail_id' => $mail->mail_id,
+//                        'success' => $success
+//                    ]);
 //
-//            $mc = new TestMailController();
-//
-//            $result = $mc->sendMail($articles, $email);
-//
-//            $mh = new MailHistoryController();
-//            if($result == 200){
-//
-//            }else{
-//
+//                    $mhc->store($mail_history);
+//                }
 //            }
-//
-//
-//
 //        })->everyMinute();
 
+        $schedule->call(function (){
+            $ac = new ArticleController();
+            $c = new Clawler();
+            $ahc = new ArticleHistoryController();
+
+            $articles = $ac->selectLatestArticle();
+
+            foreach ($articles as $article){
+                $check = $c->checkDelete($article);
+
+                if($check){
+                    $article_history = ([
+                        'article_id' => $article->id,
+                        'type' => 'D'
+                        ]);
+
+                    $ahc->store($article_history);
+                }
+            }
 
 
-//        for($db참고내용){
-
-//            $schedule->call()-> dailyAt($db참고내영[1]);
-//        }
+        })->everyMinute();
     }
 
     /**

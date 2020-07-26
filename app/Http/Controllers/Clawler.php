@@ -42,12 +42,14 @@ class Clawler
         $snoopy->fetch($url);
         $txt = $snoopy->results;
 
+        $check = false;
+
         $urlArr = "";
         $rex = '/\<dt\>(.*)\<\/dt\>/';
         preg_match_all($rex, $txt, $urlArr);
 
 
 
-        return $articles;
+        return $check;
     }
 }

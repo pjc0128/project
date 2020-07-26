@@ -101,46 +101,37 @@ class ArticleController extends Controller
 
     public function selectArticles($id)
     {
-
-
-//        select a.id, a.title, ah.type, mar.mail_id
-//            from articles a
-//            join (select  id, article_id, type
-//                  from article_histories
-//                  where (id, article_id) in (select max(id) as id, article_id
-//                                             from article_histories ah
-//                                             group by article_id))ah on (a.id = ah.article_id)
-//            join mail_article_relations mar on(mar.article_history_id = ah.id)
-//            where mar.mail_id = $mail_id
-
         $values = DB::table('article_histories')
-                              ->select(DB::raw('MAX(article_histories.id) as id')
-                                     , 'article_histories.article_id'
-                                     , DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id)) as temp"))
+                              ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
                               ->groupBy('article_histories.article_id');
-
-        Log::info($values);
 
         $latest_history = DB::table('article_histories')
                               ->select('article_histories.id'
                                       , 'article_histories.article_id'
-                                      , 'article_histories.type'
-                                      , DB::raw("concat(article_histories.id, '.' , article_histories.type)) as temp"))
-                              ->whereIn('temp', $values);
+                                      , 'article_histories.type')
+                              ->whereIn(DB::raw("concat(article_histories.id, '.' , article_histories.article_id)"), $values);
 
+        $articles = Article::select('articles.id'
+                                  , 'articles.title'
+                                  , 'ah.type'
+                                  , 'mar.mail_id')
+                             ->joinSub($latest_history, 'ah', function($join){
+                                 $join->on('ah.article_id', '=', 'articles.id');
+                             })
+                             ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'ah.id')
+                             ->where('mar.mail_id', '=' ,$id)
+                             ->get();
 
+        return $articles;
+    }
 
+    public function selectLatestArticle(){
+//        select *
+//        from articles
+//        where  DATE(created_at) = DATE_SUB(curdate(), INTERVAL 1 DAY);
 
-
-
-
-//        Log::info($latest_history);
-
-//        $articles = Article::select('article.id'
-//                                  , 'article.title'
-//                                  , 'article_histories.type')
-//                            ->subJon()
-//
-//        return $articles;
+        $articles = Article::where(DB::raw('DATE(articles.created_at)'), DB::raw('DATE_SUB(curdate(), INTERVAL 1 DAY)'))
+                             ->get();
+        Log::info($articles);
     }
 }
