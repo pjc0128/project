@@ -56,9 +56,10 @@ Route::get('/gateway', function(){
     $pre = 'http://edu.donga.com';
     $url = $article->url;
     $path = $pre.$url;
-    $mail_historyid ='';
-    DB::insert('insert into access_histories (mail_history_id, created_at)
-                      value = ('.$mail_historyid.', SYSDATE()');
+//    $mail_historyid ='';
+//    DB::insert('insert into access_histories (mail_history_id, created_at)
+//                      value = ('.$mail_historyid.', SYSDATE()');
+
 
 
     return redirect()->away($path);

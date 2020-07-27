@@ -57,7 +57,15 @@ class TestMailController extends Controller
         $content = '';
         foreach ($articles as $article){
             //$content .= "<a href='".$pre.$article['url']."'>".$article['title']."</a><br>";
-            $content .= "<a href='".$gateway."?articleNo=".$article['id']."'>".$article['title']."</a><br>";
+
+            Log::info("type : ".$article->type);
+
+            if($article->type == 'I') {
+                $content .= "<a href='" . $gateway . "?articleNo=" . $article->id . "'>" . $article->title ."</a><br>";
+
+            }else if($article->type == 'D'){
+                $content .= "<stroke>$article->title</stroke><br>";
+            }
         }
 
         $data = array(
@@ -71,6 +79,7 @@ class TestMailController extends Controller
         );
 
         $ch = curl_init();
+\
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);

@@ -15,8 +15,9 @@ class CreateMailHistoriesTable extends Migration
     {
         Schema::create('mail_histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('mail_id')->unsigned()->index();;
-            $table->bigInteger('user_id')->unsigned()->index();;
+            $table->bigInteger('mail_id')->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
+            $table->string('success');
             $table->string('read_YN')->default('N');
             $table->timestamps();
 
