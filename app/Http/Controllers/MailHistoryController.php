@@ -21,8 +21,7 @@ class MailHistoryController extends Controller
     {
         $mail_history = MailHistory::where('mail_histories.mail_id', $mid)
                                     ->where('mail_histories.user_id', $uid)
-                                    ->first()
-                                    ->get();
+                                    ->first();
 
         return $mail_history;
     }

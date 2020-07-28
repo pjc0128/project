@@ -22,8 +22,7 @@ class ArticleController extends Controller
 
     public function show($article_id){
         $article = Article::where('articles.id', '=', $article_id)
-                            ->first()
-                            ->get();
+                            ->first();
 
         return $article;
     }
