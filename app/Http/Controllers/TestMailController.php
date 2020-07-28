@@ -46,7 +46,7 @@ class TestMailController extends Controller
         return view('testMail', ['response' => $response]);
     }
 
-    function sendMail($articles, $email){
+    function sendMail($articles, $user){
         $gateway = 'http://127.0.0.1:8000/gateway';
         $url = 'http://crm3.saramin.co.kr/mail_api/automails';
         $autotype = 'A0188';
@@ -61,10 +61,10 @@ class TestMailController extends Controller
             Log::info("type : ".$article->type);
 
             if($article->type == 'I') {
-                $content .= "<a href='" . $gateway . "?articleNo=" . $article->id . "'>" . $article->title ."</a><br>";
+                $content .= "<a href='" . $gateway . "?aid=" . $article->id ."&mid=".$article->mail_id."&uid=".$user->id. "'>" . $article->title ."</a><br>";
 
             }else if($article->type == 'D'){
-                $content .= "<stroke>$article->title</stroke><br>";
+                $content .= "<strike>$article->title</strike><br>";
             }
         }
 
@@ -73,7 +73,7 @@ class TestMailController extends Controller
             'cmpncode' => $cmpncode,
             'sender_email' => $sender_email,
             'use_event_solution' => $use_event_solution,
-            'email' => $email,
+            'email' => $user->email,
             'title' => date("Y/m/d").'사람인 기사',
             'replace15' => $content
         );

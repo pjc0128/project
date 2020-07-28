@@ -15,34 +15,18 @@ class ArticleController extends Controller
 
     protected $articles;
 
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    public function show($article_id){
+        $article = Article::where('articles.id', '=', $article_id)
+                            ->first()
+                            ->get();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+        return $article;
+    }
     public function store($_article)
     {
         $article = Article::create([
@@ -56,6 +40,13 @@ class ArticleController extends Controller
 
     public function selectArticles($mail_id)
     {
+// 쿼리변경예정
+//        select *
+//        from mail_contents mc
+//join mail_article_relations mar on (mc.id = mar.mail_id)
+//join article_histories ah on (ah.id = mar.article_history_id)
+//join articles a on (a.id = ah.article_id)
+
         $values = DB::table('article_histories')
                               ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
                               ->groupBy('article_histories.article_id');

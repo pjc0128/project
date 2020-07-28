@@ -105,21 +105,24 @@ class Kernel extends ConsoleKernel
 
             foreach($users as $user){
 
-                if($user->time == null){
-                    $user->time = date("Y-m-d H:i:s", strtotime("10:00"));
+                $time = $user->time;
+                if($time == null){
+                    $time = "10:00";
                 }
+                $time = date("Y-m-d H:i:s", strtotime($time));
 
                 Log::info('now : '.$now);
-                Log::info('time : '.$user->time);
+                Log::info('time : '.$time);
                 Log::info('check : '.($now > $user->time));
 
-                if($now > $user->time){
+                if($now > $time){
 
                     $mail = $mcc->selectLatest();
                     Log::info('$mail : '.$mail);
 
                     $email = $user->email;
 
+                    /* 쿼리 변경 */
                     if($articles == null) {
                         $articles = $ac->selectArticles($mail->id);
                     }
@@ -127,7 +130,7 @@ class Kernel extends ConsoleKernel
                     Log::info('articles : '.$articles);
                     Log::info('user : '. $user);
 
-                    $result = $mc->sendMail($articles, $email);
+                    $result = $mc->sendMail($articles, $user);
 
                     $success = 'N';
 
@@ -177,6 +180,8 @@ class Kernel extends ConsoleKernel
                         'article_id' => $article->id,
                         'type' => 'D'
                     ]);
+
+                    $ahc->store($article_history);
                 }
             }
 

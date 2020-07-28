@@ -1,6 +1,9 @@
 <?php
 
 use App\Article;
+use App\Http\Controllers\AccessHistoryController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\MailHistoryController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -46,21 +49,34 @@ Route::get('/testClawling', function(){
 });
 
 Route::get('/gateway', function(){
-    $articleNo = $_GET['articleNo'];
+
 //    IPv4 주소 . . . . . . . . . : 172.20.38.65
 //   서브넷 마스크 . . . . . . . : 255.255.255.0
 //   기본 게이트웨이 . . . . . . : 172.20.38.1
-    //$article = Article::where('id', $articleNo)->first();
-    $article = DB::select('select mail_history_id, ');
+
+    $ac = new ArticleController();
+    $ahc = new AccessHistoryController();
+    $mhc = new MailHistoryController();
+
+    $aid = $_GET['aid'];
+
+
+    Log::info($aid);
+
+    $mid = $_GET['mid'];
+    $uid = $_GET['uid'];
+    Log::info('aid = '.$aid. ' mid = '.$mid . ' uid= '.$uid);
+
+    $mail_history = $mhc->show($mid, $uid);
+
+    Log::info($mail_history);
+
+    $ahc->store($mail_history->id);
 
     $pre = 'http://edu.donga.com';
+    $article = $ac->show($aid);
     $url = $article->url;
     $path = $pre.$url;
-//    $mail_historyid ='';
-//    DB::insert('insert into access_histories (mail_history_id, created_at)
-//                      value = ('.$mail_historyid.', SYSDATE()');
-
-
 
     return redirect()->away($path);
 });

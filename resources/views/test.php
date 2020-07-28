@@ -36,7 +36,7 @@ $deletedURL = 'http://edu.donga123.com/?p=article&ps=view&at_no=2020072210273465
 
 
 
-
+print '<strike>test</strike>';
 
 ?>
 

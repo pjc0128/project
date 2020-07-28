@@ -17,5 +17,15 @@ class MailHistoryController extends Controller
         ]);
     }
 
+    public function show($mid, $uid)
+    {
+        $mail_history = MailHistory::where('mail_histories.mail_id', $mid)
+                                    ->where('mail_histories.user_id', $uid)
+                                    ->first()
+                                    ->get();
+
+        return $mail_history;
+    }
+
 
 }
