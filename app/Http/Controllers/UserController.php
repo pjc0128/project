@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\AccessHistory;
-use App\MailContent;
-use App\User;
+use App\Http\Model\AccessHistory;
+use App\Http\Model\MailContent;
+use App\Http\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

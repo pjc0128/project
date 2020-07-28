@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 
-use App\Article;
-use App\ArticleHistory;
+use App\Http\Model\Article;
+use App\Http\Model\ArticleHistory;
 use App\Dummy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Log;
 
 class ArticleController extends Controller
 {
+    private  $article;
 
-    protected $articles;
+    public function __construct(Article $article){
 
-    public function index()
-    {
+        $this->article = $article;
 
     }
 

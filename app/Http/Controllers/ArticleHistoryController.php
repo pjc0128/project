@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Article;
-use App\ArticleHistory;
+use App\Http\Model\Article;
+use App\Http\Model\ArticleHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Http\Model;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;

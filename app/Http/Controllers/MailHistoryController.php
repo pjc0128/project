@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\MailHistory;
+use App\Http\Model\MailHistory;
 use Illuminate\Http\Request;
 
 class MailHistoryController extends Controller
 {
     protected $fillable = ['mail_id', 'user_id', 'success'];
+
+    private $mail_history;
+
+    public function __construct(MailHistory $mail_history){
+
+        $this->mail_history = $mail_history;
+
+    }
 
     public function store($mail_history){
         MailHistory::create([
@@ -24,6 +32,20 @@ class MailHistoryController extends Controller
                                     ->first();
 
         return $mail_history;
+    }
+
+    public function selectMailHistories($mail_id)
+    {
+        $mail_histories = $this->mail_history
+            ->select('users.email'
+                   , 'mail_histories.created_at as send_time'
+                   , 'access_histories.created_at as access_time')
+            ->join('users', 'users.id', '=', 'mail_histories.user_id')
+            ->join('access_histories', 'access_histories.mail_history_id', '=', 'mail_histories.id')
+            ->where('mail_histories.mail_id', '=', $mail_id)
+            ->get();
+
+        return $mail_histories;
     }
 
 

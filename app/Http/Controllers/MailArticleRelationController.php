@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\MailArticleRelation;
+use App\Http\Model\MailArticleRelation;
 use Illuminate\Http\Request;
 
 class MailArticleRelationController extends Controller

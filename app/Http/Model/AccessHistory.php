@@ -1,19 +1,16 @@
 <?php
 
-namespace App;
+namespace App\Http\Model;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class AccessHistory extends Model
 {
+    protected $fillable = ['mail_history_id'];
+
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
-    }
-
-    public function mail_histories(){
-
-        return $this->hasMany(MailHistory::class);
     }
 }

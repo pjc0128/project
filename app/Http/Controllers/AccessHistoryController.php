@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\AccessHistory;
+use App\Http\Model\AccessHistory;
 use Illuminate\Http\Request;
 
 class AccessHistoryController extends Controller

@@ -28,6 +28,10 @@ Route::get('/test', function () {
     return view('test');
 });
 
+Route::get('/dashboard', 'DashboardController@index');
+Route::get('/dashboard/detail', 'DashboardController@detail');
+
+
 
 Route::get('/gateway', function(){
 

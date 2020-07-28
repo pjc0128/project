@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Http\Model;
 
 use App\Http\Controllers\ArticleHistoryController;
 use DateTimeInterface;
