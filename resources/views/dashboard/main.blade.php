@@ -1,22 +1,17 @@
-<?php
 
-?>
-<style>
-    table, th, td {
-        border : 1px solid black;
-    }
+@extends('layout.table_layout')
+@section('table_name', '메일 이력')
 
-</style>
-<table>
+@section('table')
     <thead>
-    <tr>
-        <td></td>
-        <td>발송일</td>
-        <td>메일 내용 보기</td>
-        <td>대상자 수</td>
-        <td>발송 성공</td>
-        <td>발송 실패</td>
-    </tr>
+        <tr>
+            <td></td>
+            <td>발송일</td>
+            <td>메일 내용 보기</td>
+            <td>대상자 수</td>
+            <td>발송 성공</td>
+            <td>발송 실패</td>
+        </tr>
     </thead>
     <tbody>
 
@@ -24,11 +19,15 @@
         <tr>
             <td>{{$mail_content->id}}</td>
             <td>{{date_format($mail_content->created_at, 'Y-m-d')}}</td>
-            <td><a href='/dashboard/detail?mid={{$mail_content->id}}'>{{date_format($mail_content->created_at, 'Y-m-d').'사람인기사'}}</a></td>
+            <td>
+                <a href='/dashboard/detail?mid={{$mail_content->id}}&mail_title={{date_format($mail_content->created_at, 'Y-m-d').'사람인기사'}}'>
+                    {{date_format($mail_content->created_at, 'Y-m-d').'사람인기사'}}
+                </a>
+            </td>
             <td>{{$mail_content->total}}</td>
             <td>{{$mail_content->success}}</td>
             <td>{{$mail_content->fail}}</td>
         </tr>
     @endforeach
     </tbody>
-</table>
+@endsection

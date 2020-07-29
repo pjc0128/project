@@ -41,7 +41,7 @@ class MailHistoryController extends Controller
                    , 'mail_histories.created_at as send_time'
                    , 'access_histories.created_at as access_time')
             ->join('users', 'users.id', '=', 'mail_histories.user_id')
-            ->join('access_histories', 'access_histories.mail_history_id', '=', 'mail_histories.id')
+            ->leftJoin('access_histories', 'access_histories.mail_history_id', '=', 'mail_histories.id')
             ->where('mail_histories.mail_id', '=', $mail_id)
             ->get();
 

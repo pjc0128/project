@@ -1,6 +1,5 @@
 <?php
 
-use App\Article;
 use App\Http\Controllers\AccessHistoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\MailHistoryController;
@@ -39,9 +38,9 @@ Route::get('/gateway', function(){
 //   서브넷 마스크 . . . . . . . : 255.255.255.0
 //   기본 게이트웨이 . . . . . . : 172.20.38.1
 
-    $ac = new ArticleController();
+    $ac = new ArticleController(new \App\Http\Model\Article());
     $ahc = new AccessHistoryController();
-    $mhc = new MailHistoryController();
+    $mhc = new MailHistoryController(new \App\Http\Model\MailHistory());
 
     $aid = $_GET['aid'];
 

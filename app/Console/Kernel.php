@@ -2,7 +2,7 @@
 
 namespace App\Console;
 
-use App\Article;
+
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleHistoryController;
 use App\Http\Controllers\Clawler;
@@ -11,16 +11,23 @@ use App\Http\Controllers\MailContentController;
 use App\Http\Controllers\MailHistoryController;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\UserController;
+use App\Http\Model\Article;
+use App\Http\Model\MailContent;
+use App\Http\Model\MailHistory;
 use App\User;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Mockery\Container;
 
 class Kernel extends ConsoleKernel
 {
+
     /**
      * The Artisan commands provided by your application.
      *
@@ -47,9 +54,9 @@ class Kernel extends ConsoleKernel
         $schedule->call(function (){
 
             $c = new Clawler();
-            $ac = new ArticleController();
+            $ac = new ArticleController(new Article());
             $ahc = new ArticleHistoryController();
-            $mcc = new MailContentController();
+            $mcc = new MailContentController(new MailContent());
             $marc = new MailArticleRelationController();
 
 
@@ -89,11 +96,11 @@ class Kernel extends ConsoleKernel
 
 
         $schedule->call(function (){
-            $ac = new ArticleController();
+            $ac = new ArticleController(new Article());
             $uc = new UserController();
             $mc = new TestMailController();
-            $mhc = new MailHistoryController();
-            $mcc = new MailContentController();
+            $mhc = new MailHistoryController(new MailHistory());
+            $mcc = new MailContentController(new MailContent());
 
 
             $now = now();
@@ -153,10 +160,10 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function (){
 
-            $ac = new ArticleController();
+            $ac = new ArticleController(new Article());
             $c = new Clawler();
             $ahc = new ArticleHistoryController();
-            $mcc = new MailContentController();
+            $mcc = new MailContentController(new MailContent());
             $marc = new MailArticleRelationController();
 
             $mail = $mcc->selectLatest();

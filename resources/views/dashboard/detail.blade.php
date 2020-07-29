@@ -1,12 +1,8 @@
-
-<style>
-    table, th, td {
-        border : 1px solid black;
-    }
-
-</style>
+@extends('layout.table_layout')
+@section('table_name', $result['mail_title'])
 
 
+@section('sub_content')
 <table id="mail_histories">
     <thead>
 
@@ -20,8 +16,9 @@
     @endforeach
     </tbody>
 </table>
+@endsection
 
-<table id="histories">
+@section('table')
     <thead>
         <tr>
             <td>메일</td>
@@ -39,4 +36,6 @@
         </tr>
     @endforeach
     </tbody>
-</table>
+@endsection
+
+

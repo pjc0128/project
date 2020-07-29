@@ -22,8 +22,10 @@ class DashboardController
 
     public function detail(Request $request){
         $mail_id = $request->input('mid');
+        $mail_title = $request->input('mail_title');
 
         $result = $this->dashboard_service->detail($mail_id);
+        $result['mail_title'] = $mail_title;
 
         Log::info('controller articles : '. $result['articles']);
         Log::info('controller histories : '. $result['mail_histories']);
