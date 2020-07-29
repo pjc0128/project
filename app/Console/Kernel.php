@@ -47,119 +47,75 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        /*
-         * 트랜젝션처리
-         */
-        //9시 크롤링
-        $schedule->call(function (){
+        $schedule->command(
+            'command:crawling_article'
+        )->at("9:00");
 
-            $c = new Clawler();
-            $ac = new ArticleController(new Article());
-            $ahc = new ArticleHistoryController();
-            $mcc = new MailContentController(new MailContent());
-            $marc = new MailArticleRelationController();
-
-
-            $count = 0;
-            $mail_content_id = 0;
-
-            $articles = $c->clawling();
-
-            $min = date("Y-m-d-H-i-s", strtotime("-1 day"));
-            if(!empty($articles)) {
-                foreach ($articles as $article) {
-                    $date = date("Y-m-d-H-i-s", strtotime($article['date']));
-
-                    if ($date > $min) {
-                        if ($mail_content_id == 0) {
-                            $mail_content_id = $mcc->store();
-                        }
-
-                        $article_id = $ac->store($article);
-
-                        $article_history = (['article_id' => $article_id,
-                            'type' => 'I']);
-
-                        $article_history_id = $ahc->store($article_history);
-
-                        $marc->store($mail_content_id, $article_history_id);
-
-                        $count++;
-                    }
-
-                    if ($count >= 10) {
-                        return;
-                    }
-                }
-            }
-        })->at("9:00");
-
-
-        $schedule->call(function (){
-            $ac = new ArticleController(new Article());
-            $uc = new UserController();
-            $mc = new TestMailController();
-            $mhc = new MailHistoryController(new MailHistory());
-            $mcc = new MailContentController(new MailContent());
-
-
-            $now = now();
-            $users = $uc->index();
-
-            $articles = null;
-
-            Log::info('users : '.$users);
-
-            foreach($users as $user){
-
-                $time = $user->time;
-                if($time == null){
-                    $time = "10:00";
-                }
-                $time = date("Y-m-d H:i:s", strtotime($time));
-
-                Log::info('now : '.$now);
-                Log::info('time : '.$time);
-                Log::info('check : '.($now > $user->time));
-
-                if($now > $time){
-
-                    $mail = $mcc->selectLatest();
-                    Log::info('$mail : '.$mail);
-
-                    $email = $user->email;
-
-                    /* 쿼리 변경 */
-                    if($articles == null) {
-                        $articles = $ac->selectArticles($mail->id);
-                    }
-
-                    Log::info('articles : '.$articles);
-                    Log::info('user : '. $user);
-
-                    $result = $mc->sendMail($articles, $user);
-
-                    $success = 'N';
-
-                    if($result == 200){
-                        $success = 'Y';
-                    }else{
-                        /**텔레그램 발송 추가 **/
-                    }
-
-                    $mail_history = ([
-                        'user_id' => $user->id,
-                        'mail_id' => $mail->id,
-                        'success' => $success
-                    ]);
-
-                    $mhc->store($mail_history);
-                }
-            }
-        })->everyMinute();
+//        $schedule->call(function (){
+//            $ac = new ArticleController(new Article());
+//            $uc = new UserController();
+//            $mc = new TestMailController();
+//            $mhc = new MailHistoryController(new MailHistory());
+//            $mcc = new MailContentController(new MailContent());
+//
+//
+//            $now = now();
+//            $users = $uc->index();
+//
+//            $articles = null;
+//
+//            Log::info('users : '.$users);
+//
+//            foreach($users as $user){
+//
+//                $time = $user->time;
+//                if($time == null){
+//                    $time = "10:00";
+//                }
+//                $time = date("Y-m-d H:i:s", strtotime($time));
+//
+//                Log::info('now : '.$now);
+//                Log::info('time : '.$time);
+//                Log::info('check : '.($now > $user->time));
+//
+//                if($now > $time){
+//
+//                    $mail = $mcc->selectLatest();
+//                    Log::info('$mail : '.$mail);
+//
+//                    $email = $user->email;
+//
+//                    /* 쿼리 변경 */
+//                    if($articles == null) {
+//                        $articles = $ac->selectArticles($mail->id);
+//                    }
+//
+//                    Log::info('articles : '.$articles);
+//                    Log::info('user : '. $user);
+//
+//                    $result = $mc->sendMail($articles, $user);
+//
+//                    $success = 'N';
+//
+//                    if($result == 200){
+//                        $success = 'Y';
+//                    }else{
+//                        /**텔레그램 발송 추가 **/
+//                    }
+//
+//                    $mail_history = ([
+//                        'user_id' => $user->id,
+//                        'mail_id' => $mail->id,
+//                        'success' => $success
+//                    ]);
+//
+//                    $mhc->store($mail_history);
+//                }
+//            }
+//        })->everyMinute();
 
         $schedule->command(
-            'command:test'
+            'command:check_article'
         )->everyMinute();
     }
 

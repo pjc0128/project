@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories;
+namespace App\Repositories;
 
 use App\Http\Model\AccessHistory;
 use App\Repositories\AccessHistoryInterface;
@@ -10,13 +10,14 @@ class AccessHistoryRepository implements AccessHistoryInterface
 {
     private $access_history;
 
-    public function __construct(AccessHistoryInterface $access_history){
+    public function __construct(AccessHistory $access_history){
         $this->access_history = $access_history;
     }
 
     public function store($mail_history_id){
-        AccessHistory::create([
-            'mail_history_id' => $mail_history_id
-        ]);
+        $this->access_history
+            ->create([
+                'mail_history_id' => $mail_history_id
+            ]);
     }
 }
