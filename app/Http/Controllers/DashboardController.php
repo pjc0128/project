@@ -33,6 +33,13 @@ class DashboardController
         return view('dashboard/detail', ['result'=>$result]);
     }
 
+    public function chart(){
+
+        $result = $this->dashboard_service->chart();
+
+        return view('dashboard/chart', ['result'=>$result]);
+    }
+
 
 
 }

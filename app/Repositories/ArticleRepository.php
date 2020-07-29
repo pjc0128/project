@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories;
 
 
 use App\Http\Model\Article;
@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ArticleController extends Controller
+class ArticleRepository implements ArticleInterface
 {
     private  $article;
 
@@ -21,14 +21,14 @@ class ArticleController extends Controller
     }
 
     public function show($article_id){
-        $article = Article::where('articles.id', '=', $article_id)
-                            ->first();
+        $article = $this->article->where('articles.id', '=', $article_id)
+                                 ->first();
 
         return $article;
     }
     public function store($_article)
     {
-        $article = Article::create([
+        $article = $this->article->create([
            'title' => $_article['title'],
             'url' => $_article['url'],
             'created_at' => now()
@@ -56,7 +56,7 @@ class ArticleController extends Controller
                                       , 'article_histories.type')
                               ->whereIn(DB::raw("concat(article_histories.article_id, '.' , article_histories.id)"), $values);
 
-        $articles = Article::select('articles.id'
+        $articles = $this->article->select('articles.id'
                                   , 'articles.title'
                                   , 'articles.url'
                                   , 'ah.type'

@@ -28,7 +28,10 @@ Route::get('/test', function () {
 });
 
 Route::get('/dashboard', 'DashboardController@index');
+
 Route::get('/dashboard/detail', 'DashboardController@detail');
+
+Route::get('/dashboard/chart', 'DashboardController@chart');
 
 
 

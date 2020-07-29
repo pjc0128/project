@@ -1,16 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories;
 
 use App\Http\Model\Article;
 use App\Http\Model\ArticleHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ArticleHistoryController extends Controller
+class ArticleHistoryRepository implements ArticleHistoryInterface
 {
+    private $article_history;
+
+    public function __construct(ArticleHistory $article_history){
+        $this->article_history = $article_history;
+    }
+
     public function store($_article_history){
-        $article_history = ArticleHistory::create([
+        $article_history = $this->article_history->
+        create([
             'article_id' => $_article_history['article_id'],
             'type' => $_article_history['type'],
             'created_at' => now()
@@ -24,7 +31,8 @@ class ArticleHistoryController extends Controller
             ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
             ->groupBy('article_histories.article_id');
 
-        $latest_history = ArticleHistory::select('article_histories.id'
+        $latest_history = $this->article_history->
+            select('article_histories.id'
                 , 'article_histories.article_id'
                 , 'article_histories.type'
                 , 'article_histories.created_at')

@@ -1,6 +1,8 @@
 <?php
 /** 텔레그램 알림(push) php 소스 **/
 
+use Illuminate\Support\Facades\Log;
+
 define('BOT_TOKEN', '1355338404:AAGMfbvp_gQaBBEU56C4cyjnSQalDQ4hBlA');
 define('API_URL', 'https://api.telegram.org/bot'.BOT_TOKEN.'/');
 
@@ -10,6 +12,9 @@ $_TELEGRAM_CHAT_ID = array('1336061434');
 function telegramExecCurlRequest($handle) {
 
     $response = curl_exec($handle);
+
+    Log::info($response);
+
 
     if ($response === false) {
         $errno = curl_errno($handle);
@@ -90,7 +95,6 @@ foreach($_TELEGRAM_CHAT_ID AS $_TELEGRAM_CHAT_ID_STR) {
 
     $_TELEGRAM_QUERY_STR    = array(
         'chat_id' => $_TELEGRAM_CHAT_ID_STR,
-        //'text'    => "새로운 문의가 등록되었습니다 - 연락처 : {$_POST['wr_contact']}"
         'text'    => "새로운 문의가 등록되었습니다"
     );
 

@@ -158,53 +158,9 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute();
 
-        $schedule->call(function (){
-
-            $ac = new ArticleController(new Article());
-            $c = new Clawler();
-            $ahc = new ArticleHistoryController();
-            $mcc = new MailContentController(new MailContent());
-            $marc = new MailArticleRelationController();
-
-            $mail = $mcc->selectLatest();
-            $old_articles = $ac->selectArticles($mail->id);
-
-            Log::info('oldArticles : '.$old_articles );
-
-            $check = false;
-            $mail_content_id = 0;
-
-            foreach ($old_articles as $article) {
-
-                $deleted = $c->checkDelete($article->url);
-                Log::info('check1');
-
-                if ($deleted) {
-                    $check = true;
-                    Log::info('check2');
-
-                    $article_history = ([
-                        'article_id' => $article->id,
-                        'type' => 'D'
-                    ]);
-
-                    $ahc->store($article_history);
-                }
-            }
-
-            if($check){
-                if($mail_content_id == 0){
-                    $mail_content_id = $mcc->store();
-                }
-
-                $latest_histories = $ahc->selectLatestHistory();
-
-                foreach ($latest_histories as $lh){
-                    $marc->store($mail_content_id, $lh->id);
-                }
-            }
-
-        })->everyMinute();
+        $schedule->command(
+            'command:test'
+        )->everyMinute();
     }
 
     /**

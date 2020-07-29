@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories;
 
 use App\Http\Model\MailHistory;
-use Illuminate\Http\Request;
 
-class MailHistoryController extends Controller
+class MailHistoryRepository implements MailHistoryInterface
 {
     protected $fillable = ['mail_id', 'user_id', 'success'];
 
@@ -18,18 +17,20 @@ class MailHistoryController extends Controller
     }
 
     public function store($mail_history){
-        MailHistory::create([
-            'mail_id' => $mail_history['mail_id'],
-            'user_id' => $mail_history['user_id'],
-            'success' => $mail_history['success']
-        ]);
+        $this->mail_history
+            ->create([
+                'mail_id' => $mail_history['mail_id'],
+                'user_id' => $mail_history['user_id'],
+                'success' => $mail_history['success']
+            ]);
     }
 
     public function show($mid, $uid)
     {
-        $mail_history = MailHistory::where('mail_histories.mail_id', $mid)
-                                    ->where('mail_histories.user_id', $uid)
-                                    ->first();
+        $mail_history = $this->mail_history
+            ->where('mail_histories.mail_id', $mid)
+            ->where('mail_histories.user_id', $uid)
+            ->first();
 
         return $mail_history;
     }
