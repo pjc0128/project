@@ -10,4 +10,6 @@ interface ArticleInterface
 
     public function selectArticles($mail_id);
 
+    public function selectDailyArticle();
+
 }

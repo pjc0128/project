@@ -27,12 +27,14 @@ class ArticleHistoryRepository implements ArticleHistoryInterface
     }
 
     public function selectLatestHistory(){
-        $values = DB::table('article_histories')
+        $values =
+            DB::table('article_histories')
             ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
             ->groupBy('article_histories.article_id');
 
         $latest_history = $this->article_history->
-            select('article_histories.id'
+            select(
+                'article_histories.id'
                 , 'article_histories.article_id'
                 , 'article_histories.type'
                 , 'article_histories.created_at')

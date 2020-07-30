@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -27,9 +28,6 @@ class DashboardController
         $result = $this->dashboard_service->detail($mail_id);
         $result['mail_title'] = $mail_title;
 
-        Log::info('controller articles : '. $result['articles']);
-        Log::info('controller histories : '. $result['mail_histories']);
-
         return view('dashboard/detail', ['result'=>$result]);
     }
 
@@ -37,9 +35,13 @@ class DashboardController
 
         $result = $this->dashboard_service->chart();
 
+        foreach ($result as $key => $value){
+
+            $result[$key] =  json_decode($value);
+
+        }
+
+
         return view('dashboard/chart', ['result'=>$result]);
     }
-
-
-
 }

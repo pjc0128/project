@@ -9,4 +9,8 @@ interface MailHistoryInterface
     public function show($mid, $uid);
 
     public function selectMailHistories($mail_id);
+
+    public function selectDailyMailHistory();
+
+    public function selectHourlyMailHistory();
 }

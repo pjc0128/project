@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers;
+namespace App\Http\Services;
 
 use App\Repositories\AccessHistoryInterface;
 use App\Repositories\ArticleInterface;
@@ -19,7 +19,8 @@ class DashboardService
     public function __construct(MailContentInterface $mail_content_repository
                               , MailHistoryInterface $mail_history_repository
                               , ArticleInterface $article_repository
-                              , AccessHistoryInterface $access_history_repository){
+                              , AccessHistoryInterface $access_history_repository)
+    {
 
         $this->mail_content_repository = $mail_content_repository;
         $this->mail_history_repository = $mail_history_repository;
@@ -58,36 +59,34 @@ class DashboardService
 
     public function chart()
     {
-//        //메일 성공 / 실패
-//        select EXTRACT(DAY FROM created_at)
-//    , count(if(success = 'Y', success, null)) as success
 
-//    , count(if(success = 'N', success, null)) as success
-//from mail_histories
-//group by EXTRACT(DAY FROM created_at);
-
-////시간대별 메일 발송 현황
-//select EXTRACT(HOUR FROM created_at), count(*)
-//from mail_histories
-//group by EXTRACT(HOUR FROM created_at);
-
-////메일 시간대별 유입 현황
-//select EXTRACT(HOUR FROM created_at), count(*)
-//from access_histories
-//group by EXTRACT(HOUR FROM created_at);
-//
-////등록 기사 수
-//select EXTRACT(DAY FROM created_at), count(*)
-//from articles
-//group by EXTRACT(DAY FROM created_at);
         //메일 성공 / 실패
+        $daily_mail_history = $this->mail_history_repository->selectDailyMailHistory();
 
-        //메일 시간대별 발송
+        Log::info('daily_mail_history : '. $daily_mail_history);
 
-        //메일 시간대별 유입시간
+        //시간대별 메일 발송 현황
+        $hourly_mail_history = $this->mail_history_repository->selectHourlyMailHistory();
+
+        Log::info('hourly_mail_history : '.$hourly_mail_history);
+
+        //메일 시간대별 유입 현황
+        $hourly_access_history = $this->access_history_repository->selectDailyHistory();
+
+        Log::info('hourly_access_history : '.$hourly_access_history);
 
         //등록 기사 수
+        $daily_article = $this->article_repository->selectDailyArticle();
 
-        return null;
+        Log::info('daily_article : '. $daily_article);
+
+        $result = [
+            'daily_mail_history' => $daily_mail_history,
+            'hourly_mail_history' => $hourly_mail_history,
+            'hourly_access_history' => $hourly_access_history,
+            'daily_article' => $daily_article
+        ];
+
+        return $result;
     }
 }

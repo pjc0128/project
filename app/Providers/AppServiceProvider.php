@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind("App\Repositories\MailArticleRelationInterface", "App\Repositories\MailArticleRelationRepository");
         $this->app->bind("App\Repositories\MailContentInterface", "App\Repositories\MailContentRepository");
         $this->app->bind("App\Repositories\MailHistoryInterface", "App\Repositories\MailHistoryRepository");
-        $this->app->bind("App\Repositories\UserInterface", "App\Repositories\UserContentRepository");
+        $this->app->bind("App\Repositories\UserInterface", "App\Repositories\UserRepository");
 
 //        $models = array(
 //            'AccessHistory',
