@@ -7,7 +7,9 @@ use App\Repositories\AccessHistoryInterface;
 use App\Repositories\ArticleInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\MailHistoryInterface;
+use Exception;
 use Illuminate\Support\Facades\Log;
+use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
 class DashboardService
 {
@@ -35,6 +37,7 @@ class DashboardService
         $result = [
             'mail_contents' => $mail_contents
         ];
+
 
         return $result;
     }

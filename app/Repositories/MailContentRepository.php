@@ -44,7 +44,10 @@ class MailContentRepository implements MailContentInterface
                 DB::raw("COUNT(if(mail_histories.success = 'N', mail_histories.success, null)) as fail"))
             ->join('mail_histories', 'mail_histories.mail_id', '=', 'mail_contents.id')
             ->groupBy('mail_histories.mail_id')
-            ->get();
+            ->orderBy('mail_histories.mail_id', 'desc')
+            ->paginate(5);
+
+        Log::info('pagingTest'.$mail_contents);
 
         return $mail_contents;
     }

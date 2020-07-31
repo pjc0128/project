@@ -9,6 +9,7 @@ use App\Repositories\ArticleHistoryInterface;
 use App\Repositories\ArticleInterface;
 use App\Repositories\MailArticleRelationInterface;
 use App\Repositories\MailContentInterface;
+use App\Repositories\UserInterface;
 use Illuminate\Support\Facades\Log;
 
 class CrawlingService
@@ -18,18 +19,20 @@ class CrawlingService
     private $article_history_repository;
     private $mail_content_repository;
     private $mail_article_relation_repository;
-
+    private $user_repository;
 
     public function __construct(ArticleInterface $article_repository,
                                 ArticleHistoryInterface $article_history_repository,
                                 MailContentInterface $mail_content_repository,
                                 MailArticleRelationInterface $mail_article_relation_repository,
+                                UserInterface $user_repository,
                                 Snoopy $snoopy)
     {
         $this->article_repository = $article_repository;
         $this->article_history_repository = $article_history_repository;
         $this->mail_content_repository = $mail_content_repository;
         $this->mail_article_relation_repository = $mail_article_relation_repository;
+        $this->user_repository = $user_repository;
         $this->snoopy =$snoopy;
 
     }
@@ -67,7 +70,9 @@ class CrawlingService
         $articles = $this->crawling();
 
         if(!empty($articles)) {
+
             $mail_content_id = $this->mail_content_repository->store();
+
         }else{
             return;
         }
@@ -125,7 +130,7 @@ class CrawlingService
 
         Log::info('oldArticles : '.$old_articles );
 
-        $check = false;
+        $boolean = false;
         $mail_content_id = 0;
 
         foreach ($old_articles as $article) {
@@ -133,7 +138,7 @@ class CrawlingService
             $deleted = $this->checkDelete($article->url);
 
             if ($deleted) {
-                $check = true;
+                $boolean = true;
 
                 $this->article_history_repository->store(([
                     'article_id' => $article->id,
@@ -142,7 +147,7 @@ class CrawlingService
             }
         }
 
-        if($check){
+        if($boolean){
             if($mail_content_id == 0){
                 $mail_content_id = $this->mail_content_repository->store();
             }

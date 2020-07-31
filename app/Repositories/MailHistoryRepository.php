@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Http\Model\MailHistory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class MailHistoryRepository implements MailHistoryInterface
 {
@@ -46,7 +48,10 @@ class MailHistoryRepository implements MailHistoryInterface
             ->join('users', 'users.id', '=', 'mail_histories.user_id')
             ->leftJoin('access_histories', 'access_histories.mail_history_id', '=', 'mail_histories.id')
             ->where('mail_histories.mail_id', '=', $mail_id)
-            ->get();
+            ->orderBy('access_histories.created_at', 'desc')
+            ->paginate(10);
+
+        Log::info('test'.$mail_histories);
 
         return $mail_histories;
     }

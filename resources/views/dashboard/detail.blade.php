@@ -10,8 +10,14 @@
     <tbody>
     @foreach($result['articles'] as $article)
         <tr>
-
-            <td>{{$article->title}}</td>
+            <td>
+                @if($article->type == "I")
+                    <span style="color : blue">{{$article->title}}</span>
+                @endif
+                    @if($article->type == "D")
+                        <strike>{{$article->title}}</strike>
+                    @endif
+            </td>
         </tr>
     @endforeach
     </tbody>
@@ -37,5 +43,10 @@
     @endforeach
     </tbody>
 @endsection
+
+{{--@section('pagination')
+    {{$result['mail_histories']}}
+@endsection--}}
+
 
 

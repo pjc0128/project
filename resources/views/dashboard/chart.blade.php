@@ -25,35 +25,27 @@
         </div>
     </div>
 
+
     <script>
+        var ctx = document.getElementById("graphCanvas");
+
+        var labels = new Array();
+        var data =new Array();
 
         @foreach($result['daily_article'] as $daily_article)
-        console.log('day : ' + {{$daily_article->day}});
-        console.log('count : ' + {{$daily_article->count}});
+        data.push({{$daily_article->count}});
+        labels.push({{$daily_article->day }});
         @endforeach
-
-        {{--var ctx = document.getElementById("graphCanvas");--}}
-
-        {{--var daily_article = {{$daily_article}};--}}
-        {{--var labels = "";--}}
-        {{--var data ="";--}}
-        {{--for(var i = 0 ; i < daily_article.size() ; i++){--}}
-        {{--    labels[i] = daily_article['day'];--}}
-        {{--    data[i] = daily_article['count'];--}}
-
-        {{--    console.log(labels[i]);--}}
-        {{--    console.log(data[i]);--}}
-        {{--}--}}
 
         var myLineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                labels: labels,
                 datasets: [{
-                    label: "Earnings",
+                    label: "Articles",
                     lineTension: 0.3,
                     backgroundColor: "rgba(78, 115, 223, 0.05)",
-                    borderColor: "rgba(78, 115, 223, 1)",
+                    borderColor: "rgb(78,115,223)",
                     pointRadius: 3,
                     pointBackgroundColor: "rgba(78, 115, 223, 1)",
                     pointBorderColor: "rgba(78, 115, 223, 1)",
@@ -62,7 +54,7 @@
                     pointHoverBorderColor: "rgba(78, 115, 223, 1)",
                     pointHitRadius: 10,
                     pointBorderWidth: 2,
-                    data: [0, 10000, 5000, 15000, 10000, 20000, 15000, 25000, 20000, 30000, 25000, 40000],
+                    data: data,
                 }],
             },
             options: {
@@ -92,7 +84,6 @@
                         ticks: {
                             maxTicksLimit: 5,
                             padding: 10,
-                            // Include a dollar sign in the ticks
 
                         },
                         gridLines: {

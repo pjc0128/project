@@ -47,6 +47,20 @@ class ArticleRepository implements ArticleInterface
 //join article_histories ah on (ah.id = mar.article_history_id)
 //join articles a on (a.id = ah.article_id)
 
+/*        $articles =
+            DB::table('mail_contents as mc')
+                ->select(
+                    'a.id'
+                    , 'a.title'
+                    , 'a.url'
+                    , 'ah.type'
+                    , 'mar.mail_id')
+                ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'mc.id')
+                ->join('article_histories as ah', 'ah.id', '=', 'mar.mail_id')
+                ->join('articles as a','a.id', '=', 'ah.article_id')
+                ->where('mar.mail_id', '=' ,$mail_id)
+                ->get();*/
+
         $values =
             DB::table('article_histories')
                  ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))

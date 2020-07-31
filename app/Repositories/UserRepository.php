@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Http\Model\MailContent;
 use App\Http\Model\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class UserRepository implements UserInterface
@@ -43,4 +44,15 @@ class UserRepository implements UserInterface
 
         return $users;
     }
+
+//    public function countUsers(){
+//        $countUsers = $this->user
+//            ->select(
+//            DB::raw('COUNT(*) as count'))
+//            ->latest();
+//
+//        Log::info('count : '.$countUsers);
+//
+//        return $countUsers;
+//    }
 }
