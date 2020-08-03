@@ -26,18 +26,11 @@ class GatewayService
 
     public function show($article_id, $mail_id, $user_id)
     {
-        $article = $this->article_repository->show($article_id);
-
         $mail_history = $this->mail_history_repository->show($mail_id, $user_id);
-
-        Log::info($mail_history);
-
         $this->access_history_repository->store($mail_history->id);
 
-        $result = [
-            'article' => $article
+        return [
+            'article' => $this->article_repository->show($article_id)
         ];
-
-        return $result;
     }
 }

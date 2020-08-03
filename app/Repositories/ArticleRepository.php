@@ -21,89 +21,61 @@ class ArticleRepository implements ArticleInterface
     }
 
     public function show($article_id){
-        $article = $this->article->where('articles.id', '=', $article_id)
-                                 ->first();
 
-        return $article;
+        return $this->article
+            ->where('articles.id', '=', $article_id)
+            ->first();;
     }
+
     public function store($_article)
     {
-        $article = $this->article->
-            create([
-               'title' => $_article['title'],
-                'url' => $_article['url'],
-                'created_at' => now()
-            ]);
 
-        return $article->id;
+        return $this->article->
+        create([
+            'title' => $_article['title'],
+            'url' => $_article['url'],
+            'created_at' => now()
+        ]);
     }
 
-    public function selectArticles($mail_id)
-    {
-// 쿼리변경예정
-//        select *
-//        from mail_contents mc
-//join mail_article_relations mar on (mc.id = mar.mail_id)
-//join article_histories ah on (ah.id = mar.article_history_id)
-//join articles a on (a.id = ah.article_id)
-
-/*        $articles =
-            DB::table('mail_contents as mc')
-                ->select(
-                    'a.id'
-                    , 'a.title'
-                    , 'a.url'
-                    , 'ah.type'
-                    , 'mar.mail_id')
-                ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'mc.id')
-                ->join('article_histories as ah', 'ah.id', '=', 'mar.mail_id')
-                ->join('articles as a','a.id', '=', 'ah.article_id')
-                ->where('mar.mail_id', '=' ,$mail_id)
-                ->get();*/
-
+    public function selectLatestArticles(){
         $values =
             DB::table('article_histories')
-                 ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
-                 ->groupBy('article_histories.article_id');
+                ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
+                ->groupBy('article_histories.article_id');
 
         $latest_history =
             DB::table('article_histories')
-                  ->select(
-                      'article_histories.id'
-                      , 'article_histories.article_id'
-                      , 'article_histories.type')
-                  ->whereIn(DB::raw("concat(article_histories.article_id, '.' , article_histories.id)"), $values);
+                ->select(
+                    'article_histories.id'
+                    , 'article_histories.article_id'
+                    , 'article_histories.type')
+                ->whereIn(DB::raw("concat(article_histories.article_id, '.' , article_histories.id)"), $values);
 
-        $articles = $this->article
-            ->select(
-                  'articles.id'
-                , 'articles.title'
-                , 'articles.url'
-                , 'ah.type'
-                , 'mar.mail_id')
-            ->joinSub($latest_history, 'ah', function($join){
-                $join->on('ah.article_id', '=', 'articles.id');
-            })
-            ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'ah.id')
-            ->where('mar.mail_id', '=' ,$mail_id)
-            ->get();
-
-        return $articles;
+            return $this->article
+                ->select(
+                    'articles.id'
+                    , 'articles.title'
+                    , 'articles.url'
+                    , 'ah.type'
+                    , 'mar.mail_id')
+                ->joinSub($latest_history, 'ah', function($join){
+                    $join->on('ah.article_id', '=', 'articles.id');
+                })
+                ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'ah.id')
+                /*->where('mar.mail_id', '=' ,$mail_id)*/
+                ->get();
     }
 
     public function selectDailyArticle()
     {
-        //select EXTRACT(DAY FROM created_at), count(*)
-        //from articles
-        //group by EXTRACT(DAY FROM created_at);
-
-        $daily_article = $this->article
+        return $this->article
             ->select(
                 DB::raw("EXTRACT(DAY FROM articles.created_at) as day"),
                 DB::raw("COUNT(*) as count"))
             ->groupBy(DB::raw("EXTRACT(DAY FROM articles.created_at)"))
             ->get();
-
-        return $daily_article;
     }
+
+
 }

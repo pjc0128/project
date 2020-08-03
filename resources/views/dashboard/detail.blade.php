@@ -12,7 +12,7 @@
         <tr>
             <td>
                 @if($article->type == "I")
-                    <span style="color : blue">{{$article->title}}</span>
+                    <a href="{{\App\Http\Enum::PRE.$article->url}}">{{$article->title}}</a>
                 @endif
                     @if($article->type == "D")
                         <strike>{{$article->title}}</strike>

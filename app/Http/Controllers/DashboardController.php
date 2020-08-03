@@ -16,9 +16,8 @@ class DashboardController
     }
 
     public function index(){
-        $result = $this->dashboard_service->index();
 
-        return view('dashboard/main', ['result'=>$result]);
+        return view('dashboard/main', ['result'=>$this->dashboard_service->index()]);
     }
 
     public function detail(Request $request){
@@ -33,15 +32,6 @@ class DashboardController
 
     public function chart(){
 
-        $result = $this->dashboard_service->chart();
-
-        foreach ($result as $key => $value){
-
-            $result[$key] =  json_decode($value);
-
-        }
-
-
-        return view('dashboard/chart', ['result'=>$result]);
+        return view('dashboard/chart', ['result'=>$this->dashboard_service->chart()]);
     }
 }

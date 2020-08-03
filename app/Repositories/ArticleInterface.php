@@ -8,8 +8,6 @@ interface ArticleInterface
 
     public function store($_article);
 
-    public function selectArticles($mail_id);
-
     public function selectDailyArticle();
 
 }

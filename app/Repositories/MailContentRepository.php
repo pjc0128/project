@@ -17,25 +17,41 @@ class MailContentRepository implements MailContentInterface
         $this->mail_content = $mail_content;
     }
 
-    public function store()
+    public function store($total)
     {
-        $mail_content = $this->mail_content->
-            create([
-                'created_at' => now()
-            ]);
-
-        return $mail_content->id;
+        return $mail_content = $this->mail_content->
+        create([
+            'total' => $total,
+            'created_at' => now()
+        ]);
     }
 
     public function selectLatest(){
-        $mail_contents = $this->mail_content->
-            latest('created_at')->first();
 
-        return $mail_contents;
+        return  $this->mail_content
+            ->latest('created_at')
+            ->first();
+    }
+
+    public function selectArticles($mail_id)
+    {
+        return $this->mail_content
+            ->select(
+                'a.id'
+                , 'a.title'
+                , 'a.url'
+                , 'ah.type'
+                , 'mar.mail_id')
+            ->join('mail_article_relations as mar', 'mar.mail_id', '=', 'mc.id')
+            ->join('article_histories as ah', 'ah.id', '=', 'mar.article_history_id')
+            ->join('articles as a','a.id', '=', 'ah.article_id')
+            ->where('mar.mail_id', '=' ,$mail_id)
+            ->get();
     }
 
     public function selectMailContents(){
-        $mail_contents = $this->mail_content
+
+        return $this->mail_content
             ->select(
                 'mail_contents.id',
                 'mail_contents.created_at',
@@ -46,9 +62,5 @@ class MailContentRepository implements MailContentInterface
             ->groupBy('mail_histories.mail_id')
             ->orderBy('mail_histories.mail_id', 'desc')
             ->paginate(5);
-
-        Log::info('pagingTest'.$mail_contents);
-
-        return $mail_contents;
     }
 }

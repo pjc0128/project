@@ -22,19 +22,14 @@ class AccessHistoryRepository implements AccessHistoryInterface
             ]);
     }
 
-    public function selectDailyHistory()
+    public function selectHourlyHistory()
     {
-        //select EXTRACT(HOUR FROM created_at), count(*)
-        //from access_histories
-        //group by EXTRACT(HOUR FROM created_at);
-
-        $daily_access_history = $this->access_history
+        return $this->access_history
             ->select(
-                DB::raw("EXTRACT(DAY FROM access_histories.created_at) as day"),
+                DB::raw("EXTRACT(HOUR FROM access_histories.created_at) as day"),
                 DB::raw("COUNT(*) as count"))
-            ->groupBy(DB::raw("EXTRACT(DAY FROM access_histories.created_at)"))
+            ->groupBy(DB::raw("EXTRACT(HOUR FROM access_histories.created_at)"))
+            ->orderBy(DB::raw("EXTRACT(HOUR FROM access_histories.created_at)"), "asc")
             ->get();
-
-        return $daily_access_history;
     }
 }

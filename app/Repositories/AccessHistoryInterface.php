@@ -7,6 +7,6 @@ interface AccessHistoryInterface
 {
     public function store($mail_history_id);
 
-    public function selectDailyHistory();
+    public function selectHourlyHistory();
 
 }

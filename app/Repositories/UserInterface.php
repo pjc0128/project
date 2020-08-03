@@ -6,4 +6,6 @@ interface UserInterface
 {
     public function index();
 
+    public function countUsers();
+
 }

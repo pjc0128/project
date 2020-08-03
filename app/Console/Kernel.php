@@ -3,7 +3,9 @@
 namespace App\Console;
 
 
+use App\Http\Model\User;
 use App\Http\Services\TelegramService;
+use App\Repositories\UserRepository;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
@@ -38,7 +40,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(
             'command:crawling_article'
-        )->at("9:00");
+        )->everyMinute();
 
         $schedule->command(
             'command:send_mail'

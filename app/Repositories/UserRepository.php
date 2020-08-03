@@ -26,13 +26,13 @@ class UserRepository implements UserInterface
                 , 'access_histories.created_at')
             ->where('access_histories.created_at', '>', DB::raw('DATE_SUB(SYSDATE(), INTERVAL 7 DAY)'));
 
-        $users = $this->user->
-            select(
+        return $this->user
+            ->select(
                 'users.id'
-              , 'users.email'
-              , 'users.name'
-              , DB::raw('MAX(mh.mail_id) as max')
-              , DB::raw('sec_to_time(avg(time_to_sec(access_histories.created_at))) as time'))
+                , 'users.email'
+                , 'users.name'
+                , DB::raw('MAX(mh.mail_id) as max')
+                , DB::raw('sec_to_time(avg(time_to_sec(access_histories.created_at))) as time'))
             ->addSelect(['last_content' => MailContent::select(DB::raw('MAX(mail_contents.id) as last_content'))])
             ->leftJoin('mail_histories as mh', 'mh.user_id', '=', 'users.id')
             ->leftJoinSub($access, 'access_histories', function($join){
@@ -41,18 +41,14 @@ class UserRepository implements UserInterface
             ->groupBy('users.id')
             ->havingRaw('max is null || max != last_content')
             ->get();
-
-        return $users;
     }
 
-//    public function countUsers(){
-//        $countUsers = $this->user
-//            ->select(
-//            DB::raw('COUNT(*) as count'))
-//            ->latest();
-//
-//        Log::info('count : '.$countUsers);
-//
-//        return $countUsers;
-//    }
+    public function countUsers(){
+
+        return $this->user
+            ->select(
+                DB::raw('COUNT(*) as count'))
+            ->first();
+    }
+
 }

@@ -5,12 +5,12 @@ namespace App\Http\Services;
 
 
 use App\Http\Controllers\Snoopy;
+use App\Http\Enum;
 use App\Repositories\ArticleHistoryInterface;
 use App\Repositories\ArticleInterface;
 use App\Repositories\MailArticleRelationInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\UserInterface;
-use Illuminate\Support\Facades\Log;
 
 class CrawlingService
 {
@@ -37,70 +37,81 @@ class CrawlingService
 
     }
 
-    public function crawling()
+    public function crawling($min, $limit)
     {
-        $url = "http://edu.donga.com/?p=article&search=top&stx=%EC%B7%A8%EC%97%85";
+        $url = Enum::PRE.Enum::KEYWORD;
 
         $this->snoopy->fetch($url);
         $txt = $this->snoopy->results;
 
-        $urlArr = "";
+        $textArr = "";
         $rex = '/\<dt\>(.*)\<\/dt\>/';
-        preg_match_all($rex, $txt, $urlArr);
+        preg_match_all($rex, $txt, $textArr);
 
         $dateArr = "";
         $rex2 = '/\<dd class="article_desc"\>(.*)\<\/dd\>/';
         preg_match_all($rex2, $txt, $dateArr);
 
-
         $articles = array();
+        $count = 0;
 
-        for ($j = 0; $j < count($urlArr[1]); $j++) {
-            $articles[$j] = ['title'=> strip_tags($urlArr[1][$j]),
-                'url' => preg_replace('/<a href="([^"]+)">.+/', '$1', $urlArr[1][$j]),
-                'date' => strip_tags($dateArr[1][$j])];
+        for ($j = 0; $j < count($textArr[1]) ; $j++) {
+            $created_at = strip_tags($dateArr[1][$j]);
+            if ($created_at < $min){
+                continue;
+            }
+
+            array_push($articles, [
+                'title'=> strip_tags($textArr[1][$j]),
+                'url' => preg_replace('/<a href="([^"]+)">.+/', '$1', $textArr[1][$j])
+            ]);
+
+            $count++;
+
+            if($count >= $limit){
+                return $articles;
+            }
         }
         return $articles;
     }
 
     public function crawlingArticle(){
-        $mail_content_id = null;
-        $min = date("Y-m-d-H-i-s", strtotime("-1 day"));
+        $dateTime  = new \DateTime("-1 day");
+        $min = $dateTime->setTime(9, 0)->format('Y-m-d-H-i-s');
 
-        $articles = $this->crawling();
+        $limit = Enum::ARTICLE_LIMIT;
 
-        if(!empty($articles)) {
+        $articles = $this->crawling($min, $limit);
 
-            $mail_content_id = $this->mail_content_repository->store();
-
-        }else{
+        if(empty($articles)){
             return;
         }
 
+        $total = $this->user_repository->countUsers()->count;
+        $mail_content_id = $this->mail_content_repository->store($total)->id;
+
         foreach ($articles as $article) {
-            $created_at = date("Y-m-d-H-i-s", strtotime($article['date']));
 
-            if ($created_at > $min) {
+            $article_id = $this->article_repository->store($article)->id;
 
-                $article_id = $this->article_repository->store($article);
+            $article_history_id = $this->article_history_repository
+                ->store([
+                    'article_id' => $article_id,
+                    'type' => Enum::INSERT
+                ])
+                ->id;
 
-                $article_history_id = $this->article_history_repository
-                    ->store((['article_id' => $article_id,
-                        'type' => 'I'])
-                    );
-
-                $this->mail_article_relation_repository
-                    ->store($mail_content_id, $article_history_id);
-
-            }
+            $this->mail_article_relation_repository
+                ->store([
+                    'mail_id' => $mail_content_id,
+                    'article_history_id' =>$article_history_id
+                ]);
         }
     }
 
     public function checkDelete($url)
     {
-        $url = "http://edu.donga.com".$url;
-
-        $deleted = false;
+        $url = Enum::PRE.$url;
 
         $this->snoopy->fetch($url);
         $txt = $this->snoopy->results;
@@ -109,54 +120,52 @@ class CrawlingService
         $rex = '/기사가 존재하지 않습니다/';
         preg_match($rex, $txt, $check);
 
-
-        if($check != null){
-            $deleted = true;
+        if($check == null){
+            return false;
         }
 
-//        if(!@fopen($url, "r")){
-//
-//        }else{
-//
-//        }
-//
-        return $deleted;
+        return true;
+    }
+
+    public function updateForm(){
+        $total = $this->user_repository->countUsers()->count;
+        $mail_content_id = $this->mail_content_repository->store($total)->id;
+
+        $latest_histories = $this->article_history_repository->selectLatestHistory();
+
+        foreach ($latest_histories as $lh){
+            $this->mail_article_relation_repository
+                ->store([
+                    'mail_content_id' => $mail_content_id,
+                    'article_history_id' =>$lh->id
+                ]);
+        }
     }
 
     public function checkArticle(){
 
         $mail = $this->mail_content_repository->selectLatest();
-        $old_articles = $this->article_repository->selectArticles($mail->id);
+        $old_articles = $this->mail_content_repository->selectArticles($mail->id);
 
-        Log::info('oldArticles : '.$old_articles );
-
-        $boolean = false;
-        $mail_content_id = 0;
+        $deleted = false;
 
         foreach ($old_articles as $article) {
 
-            $deleted = $this->checkDelete($article->url);
-
-            if ($deleted) {
-                $boolean = true;
-
-                $this->article_history_repository->store(([
-                    'article_id' => $article->id,
-                    'type' => 'D'
-                ]));
+            if (!$this->checkDelete($article->url)) {
+                continue;
             }
+
+            $deleted = true;
+
+            $this->article_history_repository
+                ->store([
+                    'article_id' => $article->id,
+                    'type' => Enum::DELETE
+                ]);
         }
 
-        if($boolean){
-            if($mail_content_id == 0){
-                $mail_content_id = $this->mail_content_repository->store();
-            }
-
-            $latest_histories = $this->article_history_repository->selectLatestHistory();
-
-            foreach ($latest_histories as $lh){
-                $this->mail_article_relation_repository->store($mail_content_id, $lh->id);
-            }
+        if($deleted){
+            $this->updateForm();
         }
     }
 }
