@@ -4,6 +4,7 @@
 namespace App\Http\Services;
 
 
+use App\Exceptions\CrawlingFailException;
 use App\Http\Controllers\Snoopy;
 use App\Http\Enum;
 use App\Repositories\ArticleHistoryInterface;
@@ -11,6 +12,7 @@ use App\Repositories\ArticleInterface;
 use App\Repositories\MailArticleRelationInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\UserInterface;
+use Illuminate\Support\Facades\Log;
 
 class CrawlingService
 {
@@ -20,12 +22,14 @@ class CrawlingService
     private $mail_content_repository;
     private $mail_article_relation_repository;
     private $user_repository;
+    private $telegram_service;
 
     public function __construct(ArticleInterface $article_repository,
                                 ArticleHistoryInterface $article_history_repository,
                                 MailContentInterface $mail_content_repository,
                                 MailArticleRelationInterface $mail_article_relation_repository,
                                 UserInterface $user_repository,
+                                TelegramService $telegram_service,
                                 Snoopy $snoopy)
     {
         $this->article_repository = $article_repository;
@@ -33,6 +37,7 @@ class CrawlingService
         $this->mail_content_repository = $mail_content_repository;
         $this->mail_article_relation_repository = $mail_article_relation_repository;
         $this->user_repository = $user_repository;
+        $this->telegram_service = $telegram_service;
         $this->snoopy =$snoopy;
 
     }
@@ -52,11 +57,16 @@ class CrawlingService
         $rex2 = '/\<dd class="article_desc"\>(.*)\<\/dd\>/';
         preg_match_all($rex2, $txt, $dateArr);
 
+        if(!$textArr){
+            throw new CrawlingFailException('Text not found');
+        }
+
         $articles = array();
         $count = 0;
 
         for ($j = 0; $j < count($textArr[1]) ; $j++) {
             $created_at = strip_tags($dateArr[1][$j]);
+
             if ($created_at < $min){
                 continue;
             }
@@ -77,11 +87,21 @@ class CrawlingService
 
     public function crawlingArticle(){
         $dateTime  = new \DateTime("-1 day");
-        $min = $dateTime->setTime(9, 0)->format('Y-m-d-H-i-s');
+
+        $min = $dateTime->setTime(9, 0)->format('Y-m-d H:i:s');
 
         $limit = Enum::ARTICLE_LIMIT;
 
-        $articles = $this->crawling($min, $limit);
+        $articles = null;
+        try {
+
+            $articles = $this->crawling($min, $limit);
+
+        } catch (CrawlingFailException $e) {
+
+            $this->telegram_service->crawlingErrorMessage();
+
+        }
 
         if(empty($articles)){
             return;
@@ -89,6 +109,8 @@ class CrawlingService
 
         $total = $this->user_repository->countUsers()->count;
         $mail_content_id = $this->mail_content_repository->store($total)->id;
+
+
 
         foreach ($articles as $article) {
 

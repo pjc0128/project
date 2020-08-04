@@ -97,7 +97,7 @@ class MailService
             }
 
             $mail = $this->mail_content_repository->selectLatest();
-            $articles = $this->article_repository->selectArticles($mail->id);
+            $articles = $this->mail_content_repository->selectArticles($mail->id);
 
             $result = $this->send($articles, $user);
 

@@ -37,15 +37,15 @@ class MailContentRepository implements MailContentInterface
     {
         return $this->mail_content
             ->select(
-                'a.id'
-                , 'a.title'
-                , 'a.url'
-                , 'ah.type'
-                , 'mar.mail_id')
-            ->join('mail_article_relations as mar', 'mar.mail_id', '=', 'mc.id')
-            ->join('article_histories as ah', 'ah.id', '=', 'mar.article_history_id')
-            ->join('articles as a','a.id', '=', 'ah.article_id')
-            ->where('mar.mail_id', '=' ,$mail_id)
+                'articles.id'
+                , 'articles.title'
+                , 'articles.url'
+                , 'article_histories.type'
+                , 'mail_article_relations.mail_id')
+            ->join('mail_article_relations', 'mail_article_relations.mail_id', '=', 'mail_contents.id')
+            ->join('article_histories', 'article_histories.id', '=', 'mail_article_relations.article_history_id')
+            ->join('articles','articles.id', '=', 'article_histories.article_id')
+            ->where('mail_article_relations.mail_id', '=' ,$mail_id)
             ->get();
     }
 

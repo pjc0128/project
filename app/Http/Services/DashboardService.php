@@ -37,6 +37,7 @@ class DashboardService
 
     public function detail($mail_id)
     {
+
         return [
             'mail_histories' => $this->mail_history_repository->selectMailHistories($mail_id),
             'articles' => $this->mail_content_repository->selectArticles($mail_id)

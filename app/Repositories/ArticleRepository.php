@@ -24,7 +24,7 @@ class ArticleRepository implements ArticleInterface
 
         return $this->article
             ->where('articles.id', '=', $article_id)
-            ->first();;
+            ->first();
     }
 
     public function store($_article)

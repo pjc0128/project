@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(
             'command:crawling_article'
-        )->everyMinute();
+        )->at("9:00");
 
         $schedule->command(
             'command:send_mail'
