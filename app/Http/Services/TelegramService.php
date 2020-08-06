@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
+    const TELEGRAM_CHAT_ID = ['1336061434'];
 
 
     function telegramSendMessage($parameters)
@@ -19,7 +20,7 @@ class TelegramService
             }
         }
 
-        $url = Enum::API_URL . $method . '?' . http_build_query($parameters);
+        $url = getenv('API_URL') . $method . '?' . http_build_query($parameters);
 
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -31,7 +32,7 @@ class TelegramService
 
     public function sendMailErrorMessage($code, $email)
     {
-        foreach (Enum::TELEGRAM_CHAT_ID as $_TELEGRAM_CHAT_ID_STR) {
+        foreach (getenv('TELEGRAM_CHAT_ID') as $_TELEGRAM_CHAT_ID_STR) {
 
             $_TELEGRAM_QUERY_STR = [
                 'chat_id' => $_TELEGRAM_CHAT_ID_STR,
@@ -47,7 +48,7 @@ class TelegramService
 
     public function crawlingErrorMessage()
     {
-        foreach (Enum::TELEGRAM_CHAT_ID as $_TELEGRAM_CHAT_ID_STR) {
+        foreach (self::TELEGRAM_CHAT_ID as $_TELEGRAM_CHAT_ID_STR) {
 
             $_TELEGRAM_QUERY_STR = [
                 'chat_id' => $_TELEGRAM_CHAT_ID_STR,

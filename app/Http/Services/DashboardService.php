@@ -48,9 +48,16 @@ class DashboardService
     {
         return [
             'daily_mail_history' => $this->mail_history_repository->selectDailyMailHistory(),
-            'hourly_mail_history' => $this->mail_history_repository->selectHourlyMailHistory(),
             'hourly_access_history' => $this->access_history_repository->selectHourlyHistory(),
             'daily_article' => $this->article_repository->selectDailyArticle()
         ];
+    }
+
+    public function article()
+    {
+        return[
+            'articles' => $this->article_repository->selectLatestArticles()
+        ];
+
     }
 }

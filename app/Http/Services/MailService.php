@@ -4,7 +4,6 @@
 namespace App\Http\Services;
 
 
-use App\Http\Enum;
 use App\Repositories\ArticleInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\MailHistoryInterface;
@@ -32,15 +31,16 @@ class MailService
         $this->telegram_service = $telegram_service;
     }
 
-    public function makeContent($articles, $user){
-        $gateway = Enum::GATEWAY;
+    public function makeContent($articles, $user)
+    {
+        $gateway = getenv('GATEWAY');
         $content = '';
 
-        foreach ($articles as $article){
-            if($article->type == Enum::INSERT) {
+        foreach ($articles as $article) {
+            if ($article->type == getenv('INSERT')) {
                 $content .= "<a href='{$gateway}?aid={$article->id}&mid={$article->mail_id}&uid={$user->id}'>{$article->title}</a><br>";
 
-            }else if($article->type == Enum::DELETE){
+            } else if ($article->type == getenv('DELETE')) {
                 $content .= "<strike>{$article->title}</strike><br>";
             }
         }
@@ -48,51 +48,57 @@ class MailService
         return $content;
     }
 
-    public function send($articles, $user){
+    public function send($articles, $user)
+    {
 
         $content = $this->makeContent($articles, $user);
 
-        $data = array(
-            'autotype' => Enum::AUTOTYPE,
-            'cmpncode' => Enum::CMPNCODE,
-            'sender_email' => Enum::SENDER_MAIL,
-            'use_event_solution' => Enum::USE_EVENT_SOLUTION,
+        $data = [
+            'autotype' => getenv('AUTOTYPE'),
+            'cmpncode' => getenv('CMPNCODE'),
+            'sender_email' => getenv('SENDER_MAIL'),
+            'use_event_solution' => getenv('USE_EVENT_SOLUTION'),
             'email' => $user->email,
-            'title' => date("Y/m/d").'사람인 기사',
+            'title' => date("Y/m/d") . '사람인 기사',
             'replace15' => $content
-        );
+        ];
 
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, Enum::MAIL_REQUEST_URL);
+        curl_setopt($ch, CURLOPT_URL, getenv('MAIL_REQUEST_URL'));
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $response =  curl_exec($ch);
+        $response = curl_exec($ch);
         $result = json_decode($response);
 
         return $result->code;
     }
 
+    public function isValidTime($user)
+    {
+        $now = now();
+
+        $access_time = !empty($user->time) ? $user->time : "10:00";
+        $access_time = date("Y-m-d H:i:s", strtotime($access_time));
+
+        if ($now > $access_time) {
+            return true;
+        }
+    }
+
     public function sendMail()
     {
-
-        $now = now();
         $users = $this->user_repository->index();
 
-        if(empty($users)){
+        if (empty($users)) {
             return;
         }
 
+        foreach ($users as $user) {
 
-
-        foreach($users as $user){
-
-            $access_time = !empty($user->time)?$user->time:"10:00";
-            $access_time = date("Y-m-d H:i:s", strtotime($access_time));
-
-            if($now < $access_time){
+            if (!$this->isValidTime($user)) {
                 continue;
             }
 
@@ -101,19 +107,16 @@ class MailService
 
             $result = $this->send($articles, $user);
 
-            $success = 'Y';
-
-            if($result != 200){
-                $success = 'N';
-                $this->telegram_service->sendMailErrorMessage($result, $user->email);
-            }
-
             $this->mail_history_repository
                 ->store([
                     'user_id' => $user->id,
                     'mail_id' => $mail->id,
-                    'success' => $success
+                    'success' => $result == 200 ? "Y" : "N"
                 ]);
+
+            if ($result != 200) {
+                $this->telegram_service->sendMailErrorMessage($result, $user->email);
+            }
 
         }
     }

@@ -34,4 +34,8 @@ class DashboardController
 
         return view('dashboard/chart', ['result'=>$this->dashboard_service->chart()]);
     }
+    public function article(){
+
+        return view('dashboard/article', ['result'=>$this->dashboard_service->article()]);
+    }
 }

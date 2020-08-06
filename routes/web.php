@@ -26,6 +26,8 @@ Route::get('/dashboard/chart', 'DashboardController@chart');
 
 Route::get('/gateway', 'GatewayController@show');
 
+Route::get('/dashboard/article', 'DashboardController@article');
+
 Route::get('/test', function () {
     return view('test');
 });

@@ -57,14 +57,13 @@ class ArticleRepository implements ArticleInterface
                     'articles.id'
                     , 'articles.title'
                     , 'articles.url'
-                    , 'ah.type'
-                    , 'mar.mail_id')
+                    , 'articles.created_at'
+                    , 'ah.type')
                 ->joinSub($latest_history, 'ah', function($join){
                     $join->on('ah.article_id', '=', 'articles.id');
                 })
-                ->join('mail_article_relations as mar', 'mar.article_history_id', '=', 'ah.id')
-                /*->where('mar.mail_id', '=' ,$mail_id)*/
-                ->get();
+                ->orderBy('articles.id', 'desc')
+                ->paginate(10);
     }
 
     public function selectDailyArticle()
@@ -72,10 +71,12 @@ class ArticleRepository implements ArticleInterface
         return $this->article
             ->select(
                 DB::raw("EXTRACT(DAY FROM articles.created_at) as day"),
+                DB::raw("EXTRACT(MONTH FROM articles.created_at) as month"),
                 DB::raw("COUNT(*) as count"))
             ->groupBy(DB::raw("EXTRACT(DAY FROM articles.created_at)"))
+            ->groupBy(DB::raw("EXTRACT(MONTH FROM articles.created_at)"))
+            ->orderBy('month', 'asc')
+            ->orderBy('day', 'asc')
             ->get();
     }
-
-
 }

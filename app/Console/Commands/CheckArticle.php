@@ -21,6 +21,6 @@ class CheckArticle extends Command
 
     public function handle()
     {
-        $this->crawling_service->checkArticle();
+        $this->crawling_service->checkDelete();
     }
 }

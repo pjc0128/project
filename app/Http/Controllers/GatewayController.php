@@ -3,8 +3,6 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Enum;
 use App\Http\Services\GatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +26,7 @@ class GatewayController
         $result = $this->gateway_service->show($article_id, $mail_id, $user_id);
 
         $url = $result['article']->url;
-        $path = Enum::PRE.$url;
+        $path = getenv('PRE').$url;
 
         return redirect()->away($path);
     }

@@ -10,4 +10,6 @@ interface ArticleInterface
 
     public function selectDailyArticle();
 
+    public function selectLatestArticles();
+
 }

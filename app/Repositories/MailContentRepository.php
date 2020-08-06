@@ -61,6 +61,6 @@ class MailContentRepository implements MailContentInterface
             ->join('mail_histories', 'mail_histories.mail_id', '=', 'mail_contents.id')
             ->groupBy('mail_histories.mail_id')
             ->orderBy('mail_histories.mail_id', 'desc')
-            ->paginate(5);
+            ->paginate(10);
     }
 }

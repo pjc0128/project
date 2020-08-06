@@ -3,34 +3,34 @@
 
 
 @section('sub_content')
-<table id="mail_histories">
-    <thead>
+    <table id="mail_histories">
+        <thead>
 
-    </thead>
-    <tbody>
-    @foreach($result['articles'] as $article)
-        <tr>
-            <td>
-                @if($article->type == "I")
-                    <a href="{{\App\Http\Enum::PRE.$article->url}}">{{$article->title}}</a>
-                @endif
+        </thead>
+        <tbody>
+        @foreach($result['articles'] as $article)
+            <tr>
+                <td>
+                    @if($article->type == "I")
+                        <a href="{{getenv('PRE').$article->url}}">{{$article->title}}</a>
+                    @endif
                     @if($article->type == "D")
                         <strike>{{$article->title}}</strike>
                     @endif
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
+                </td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
 @endsection
 
 @section('table')
     <thead>
-        <tr>
-            <td>메일</td>
-            <td>발송 시간</td>
-            <td>유입 시간</td>
-        </tr>
+    <tr>
+        <td>메일</td>
+        <td>발송 시간</td>
+        <td>유입 시간</td>
+    </tr>
     </thead>
     <tbody>
 

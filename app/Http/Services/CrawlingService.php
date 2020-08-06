@@ -6,12 +6,13 @@ namespace App\Http\Services;
 
 use App\Exceptions\CrawlingFailException;
 use App\Http\Controllers\Snoopy;
-use App\Http\Enum;
 use App\Repositories\ArticleHistoryInterface;
 use App\Repositories\ArticleInterface;
 use App\Repositories\MailArticleRelationInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\UserInterface;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CrawlingService
@@ -38,13 +39,13 @@ class CrawlingService
         $this->mail_article_relation_repository = $mail_article_relation_repository;
         $this->user_repository = $user_repository;
         $this->telegram_service = $telegram_service;
-        $this->snoopy =$snoopy;
+        $this->snoopy = $snoopy;
 
     }
 
     public function crawling($min, $limit)
     {
-        $url = Enum::PRE.Enum::KEYWORD;
+        $url = getenv('PRE') . getenv('KEYWORD');
 
         $this->snoopy->fetch($url);
         $txt = $this->snoopy->results;
@@ -57,83 +58,37 @@ class CrawlingService
         $rex2 = '/\<dd class="article_desc"\>(.*)\<\/dd\>/';
         preg_match_all($rex2, $txt, $dateArr);
 
-        if(!$textArr){
-            throw new CrawlingFailException('Text not found');
+        if (!$textArr) {
+            throw new Exception();
         }
 
         $articles = array();
         $count = 0;
 
-        for ($j = 0; $j < count($textArr[1]) ; $j++) {
+        for ($j = 0; $j < count($textArr[1]); $j++) {
             $created_at = strip_tags($dateArr[1][$j]);
 
-            if ($created_at < $min){
+            if ($created_at < $min) {
                 continue;
             }
 
             array_push($articles, [
-                'title'=> strip_tags($textArr[1][$j]),
+                'title' => strip_tags($textArr[1][$j]),
                 'url' => preg_replace('/<a href="([^"]+)">.+/', '$1', $textArr[1][$j])
             ]);
 
             $count++;
 
-            if($count >= $limit){
+            if ($count >= $limit) {
                 return $articles;
             }
         }
         return $articles;
     }
 
-    public function crawlingArticle(){
-        $dateTime  = new \DateTime("-1 day");
-
-        $min = $dateTime->setTime(9, 0)->format('Y-m-d H:i:s');
-
-        $limit = Enum::ARTICLE_LIMIT;
-
-        $articles = null;
-        try {
-
-            $articles = $this->crawling($min, $limit);
-
-        } catch (CrawlingFailException $e) {
-
-            $this->telegram_service->crawlingErrorMessage();
-
-        }
-
-        if(empty($articles)){
-            return;
-        }
-
-        $total = $this->user_repository->countUsers()->count;
-        $mail_content_id = $this->mail_content_repository->store($total)->id;
-
-
-
-        foreach ($articles as $article) {
-
-            $article_id = $this->article_repository->store($article)->id;
-
-            $article_history_id = $this->article_history_repository
-                ->store([
-                    'article_id' => $article_id,
-                    'type' => Enum::INSERT
-                ])
-                ->id;
-
-            $this->mail_article_relation_repository
-                ->store([
-                    'mail_id' => $mail_content_id,
-                    'article_history_id' =>$article_history_id
-                ]);
-        }
-    }
-
-    public function checkDelete($url)
+    public function checkArticle($url)
     {
-        $url = Enum::PRE.$url;
+        $url = getenv('PRE') . $url;
 
         $this->snoopy->fetch($url);
         $txt = $this->snoopy->results;
@@ -142,29 +97,84 @@ class CrawlingService
         $rex = '/기사가 존재하지 않습니다/';
         preg_match($rex, $txt, $check);
 
-        if($check == null){
+        if ($check == null) {
             return false;
         }
 
         return true;
     }
 
-    public function updateForm(){
+    public function createMailContent()
+    {
         $total = $this->user_repository->countUsers()->count;
-        $mail_content_id = $this->mail_content_repository->store($total)->id;
+        return $this->mail_content_repository->store($total)->id;
+    }
 
+    public function createMailArticleRelation($mail_content_id, $article_history_id)
+    {
+        $this->mail_article_relation_repository
+            ->store([
+                'mail_content_id' => $mail_content_id,
+                'article_history_id' => $article_history_id
+            ]);
+    }
+
+    public function createArticleHistory($article_id, $type)
+    {
+        return $this->article_history_repository
+            ->store([
+                'article_id' => $article_id,
+                'type' => $type
+            ])
+            ->id;
+    }
+
+
+    public function updateForm()
+    {
+        $mail_content_id = $this->createMailContent();
         $latest_histories = $this->article_history_repository->selectLatestHistory();
 
-        foreach ($latest_histories as $lh){
-            $this->mail_article_relation_repository
-                ->store([
-                    'mail_content_id' => $mail_content_id,
-                    'article_history_id' =>$lh->id
-                ]);
+        foreach ($latest_histories as $latest_history) {
+            $this->createMailArticleRelation($mail_content_id, $latest_history->id);
         }
     }
 
-    public function checkArticle(){
+    public function crawlingArticle()
+    {
+        $dateTime = new \DateTime("-1 day");
+        $min = $dateTime->setTime(9, 0)->format('Y-m-d H:i:s');
+
+        $articles = null;
+
+        try {
+            $articles = $this->crawling($min, getenv('ARTICLE_LIMIT'));
+        } catch (Exception $e) {
+            $this->telegram_service->crawlingErrorMessage();
+        }
+
+        if (empty($articles)) {
+            return;
+        }
+
+        $mail_content_id = $this->createMailContent();
+
+        foreach ($articles as $article) {
+            DB::beginTransaction();
+
+            try {
+                $article_id = $this->article_repository->store($article)->id;
+                $article_history_id = $this->createArticleHistory($article_id, getenv('INSERT'));
+                $this->createMailArticleRelation($mail_content_id, $article_history_id);
+            } catch (Exception $e) {
+                DB::rollBack();
+            }
+        }
+        DB::commit();
+    }
+
+    public function checkDelete()
+    {
 
         $mail = $this->mail_content_repository->selectLatest();
         $old_articles = $this->mail_content_repository->selectArticles($mail->id);
@@ -173,20 +183,15 @@ class CrawlingService
 
         foreach ($old_articles as $article) {
 
-            if (!$this->checkDelete($article->url)) {
+            if (!$this->checkArticle($article->url)) {
                 continue;
             }
 
             $deleted = true;
-
-            $this->article_history_repository
-                ->store([
-                    'article_id' => $article->id,
-                    'type' => Enum::DELETE
-                ]);
+            $this->createArticleHistory($article->id, getenv('DELETE'));
         }
 
-        if($deleted){
+        if ($deleted) {
             $this->updateForm();
         }
     }
