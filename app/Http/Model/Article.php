@@ -15,8 +15,8 @@ class Article extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function article_histories(){
-
+    public function article_histories()
+    {
         return $this->hasMany(ArticleHistory::class);
     }
 }

@@ -15,13 +15,13 @@ class MailContent extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function mail_article_relations(){
-
+    public function mail_article_relations()
+    {
         return $this->hasMany(MailArticleRelation::class);
     }
 
-    public function mail_histories(){
-
+    public function mail_histories()
+    {
         return $this->hasMany(MailHistory::class);
     }
 }

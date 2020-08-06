@@ -12,8 +12,8 @@ class User extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function mail_histories(){
-
+    public function mail_histories()
+    {
         return $this->hasMany(MailHistory::class);
     }
 }

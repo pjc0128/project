@@ -13,13 +13,13 @@ class UserRepository implements UserInterface
 {
     private $user;
 
-    public function __construct(User $user){
-
+    public function __construct(User $user)
+    {
         $this->user = $user;
-
     }
 
-    public function index(){
+    public function index()
+    {
         $access = DB::table('access_histories')
             ->select(
                 'access_histories.mail_history_id'
@@ -35,7 +35,7 @@ class UserRepository implements UserInterface
                 , DB::raw('sec_to_time(avg(time_to_sec(access_histories.created_at))) as time'))
             ->addSelect(['last_content' => MailContent::select(DB::raw('MAX(mail_contents.id) as last_content'))])
             ->leftJoin('mail_histories as mh', 'mh.user_id', '=', 'users.id')
-            ->leftJoinSub($access, 'access_histories', function($join){
+            ->leftJoinSub($access, 'access_histories', function ($join) {
                 $join->on('access_histories.mail_history_id', '=', 'mh.id');
             })
             ->groupBy('users.id')
@@ -43,8 +43,8 @@ class UserRepository implements UserInterface
             ->get();
     }
 
-    public function countUsers(){
-
+    public function countUsers()
+    {
         return $this->user
             ->select(
                 DB::raw('COUNT(*) as count'))

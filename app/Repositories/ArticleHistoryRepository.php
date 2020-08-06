@@ -11,12 +11,13 @@ class ArticleHistoryRepository implements ArticleHistoryInterface
 {
     private $article_history;
 
-    public function __construct(ArticleHistory $article_history){
+    public function __construct(ArticleHistory $article_history)
+    {
         $this->article_history = $article_history;
     }
 
-    public function store($_article_history){
-
+    public function store($_article_history)
+    {
         return $this->article_history->
         create([
             'article_id' => $_article_history['article_id'],
@@ -25,11 +26,12 @@ class ArticleHistoryRepository implements ArticleHistoryInterface
         ]);
     }
 
-    public function selectLatestHistory(){
+    public function selectLatestHistory()
+    {
         $values =
             DB::table('article_histories')
-            ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
-            ->groupBy('article_histories.article_id');
+                ->select(DB::raw("concat(article_histories.article_id,'.', MAX(article_histories.id))"))
+                ->groupBy('article_histories.article_id');
 
         return $this->article_history->
         select(

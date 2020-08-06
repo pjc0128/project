@@ -16,18 +16,18 @@ class MailHistory extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    function user(){
-
+    function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    function mail_content(){
-
+    function mail_content()
+    {
         return $this->belongsTo(MailContent::class);
     }
 
-    function access_histories(){
-
+    function access_histories()
+    {
         return $this->hasMany(AccessHistory::class);
     }
 }

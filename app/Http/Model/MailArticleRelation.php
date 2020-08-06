@@ -15,13 +15,13 @@ class MailArticleRelation extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function article_history(){
-
+    public function article_history()
+    {
         return $this->belongsTo(ArticleHistory::class);
     }
 
-    public function mail_history(){
-
+    public function mail_history()
+    {
         return $this->belongsTo(MailContent::class);
     }
 }

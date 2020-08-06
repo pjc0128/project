@@ -1,6 +1,7 @@
 <?php
 
 namespace  App\Http\Controllers;
+
 /*************************************************
  *
  * Snoopy - the PHP net client
@@ -865,7 +866,7 @@ class Snoopy
         $context = stream_context_create($context_opts);
 
         if (version_compare(PHP_VERSION, '5.0.0', '>')) {
-            if($this->scheme == 'http')
+            if ($this->scheme == 'http')
                 $host = "tcp://" . $host;
             $fp = stream_socket_client(
                 "$host:$port",

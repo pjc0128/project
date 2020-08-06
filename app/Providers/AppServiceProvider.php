@@ -14,8 +14,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
-
         $this->app->bind("App\Repositories\AccessHistoryInterface", "App\Repositories\AccessHistoryRepository");
         $this->app->bind("App\Repositories\ArticleInterface", "App\Repositories\ArticleRepository");
         $this->app->bind("App\Repositories\ArticleHistoryInterface", "App\Repositories\ArticleHistoryRepository");

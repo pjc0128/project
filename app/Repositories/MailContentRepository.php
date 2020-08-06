@@ -13,7 +13,8 @@ class MailContentRepository implements MailContentInterface
 {
     private $mail_content;
 
-    public function __construct(MailContent $mail_content){
+    public function __construct(MailContent $mail_content)
+    {
         $this->mail_content = $mail_content;
     }
 
@@ -26,9 +27,9 @@ class MailContentRepository implements MailContentInterface
         ]);
     }
 
-    public function selectLatest(){
-
-        return  $this->mail_content
+    public function selectLatest()
+    {
+        return $this->mail_content
             ->latest('created_at')
             ->first();
     }
@@ -44,13 +45,13 @@ class MailContentRepository implements MailContentInterface
                 , 'mail_article_relations.mail_id')
             ->join('mail_article_relations', 'mail_article_relations.mail_id', '=', 'mail_contents.id')
             ->join('article_histories', 'article_histories.id', '=', 'mail_article_relations.article_history_id')
-            ->join('articles','articles.id', '=', 'article_histories.article_id')
-            ->where('mail_article_relations.mail_id', '=' ,$mail_id)
+            ->join('articles', 'articles.id', '=', 'article_histories.article_id')
+            ->where('mail_article_relations.mail_id', '=', $mail_id)
             ->get();
     }
 
-    public function selectMailContents(){
-
+    public function selectMailContents()
+    {
         return $this->mail_content
             ->select(
                 'mail_contents.id',

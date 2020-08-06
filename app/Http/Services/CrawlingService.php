@@ -4,7 +4,6 @@
 namespace App\Http\Services;
 
 
-use App\Exceptions\CrawlingFailException;
 use App\Http\Controllers\Snoopy;
 use App\Repositories\ArticleHistoryInterface;
 use App\Repositories\ArticleInterface;
@@ -83,6 +82,7 @@ class CrawlingService
                 return $articles;
             }
         }
+
         return $articles;
     }
 

@@ -13,13 +13,13 @@ class MailHistoryRepository implements MailHistoryInterface
 
     private $mail_history;
 
-    public function __construct(MailHistory $mail_history){
-
+    public function __construct(MailHistory $mail_history)
+    {
         $this->mail_history = $mail_history;
-
     }
 
-    public function store($mail_history){
+    public function store($mail_history)
+    {
         $this->mail_history
             ->create([
                 'mail_id' => $mail_history['mail_id'],
@@ -38,7 +38,6 @@ class MailHistoryRepository implements MailHistoryInterface
 
     public function selectMailHistories($mail_id)
     {
-
         return $this->mail_history
             ->select(
                 'users.email'
@@ -54,7 +53,6 @@ class MailHistoryRepository implements MailHistoryInterface
 
     public function selectDailyMailHistory()
     {
-
         return $this->mail_history
             ->select(
                 DB::raw("EXTRACT(DAY FROM mail_histories.created_at) as day"),
@@ -66,7 +64,6 @@ class MailHistoryRepository implements MailHistoryInterface
 
     public function selectHourlyMailHistory()
     {
-
         return $this->mail_history
             ->select(
                 DB::raw("EXTRACT(HOUR FROM mail_histories.created_at) as hour"),

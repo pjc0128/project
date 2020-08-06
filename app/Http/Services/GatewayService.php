@@ -15,9 +15,9 @@ class GatewayService
     private $access_history_repository;
     private $mail_history_repository;
 
-    public  function __construct(ArticleInterface $article_repository,
-                                 AccessHistoryInterface $access_history_repository,
-                                 MailHistoryInterface $mail_history_repository)
+    public function __construct(ArticleInterface $article_repository,
+                                AccessHistoryInterface $access_history_repository,
+                                MailHistoryInterface $mail_history_repository)
     {
         $this->article_repository = $article_repository;
         $this->access_history_repository = $access_history_repository;
