@@ -61,7 +61,7 @@ class CrawlingService
             throw new Exception();
         }
 
-        $articles = array();
+        $articles = [];
         $count = 0;
 
         for ($j = 0; $j < count($textArr[1]); $j++) {
@@ -100,6 +100,7 @@ class CrawlingService
         if ($check == null) {
             return false;
         }
+
 
         return true;
     }
@@ -166,11 +167,11 @@ class CrawlingService
                 $article_id = $this->article_repository->store($article)->id;
                 $article_history_id = $this->createArticleHistory($article_id, getenv('INSERT'));
                 $this->createMailArticleRelation($mail_content_id, $article_history_id);
+                DB::commit();
             } catch (Exception $e) {
                 DB::rollBack();
             }
         }
-        DB::commit();
     }
 
     public function checkDelete()
