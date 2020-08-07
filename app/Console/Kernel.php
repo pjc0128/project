@@ -43,11 +43,11 @@ class Kernel extends ConsoleKernel
         )->at("9:00");
 
         $schedule->command(
-            'command:send_mail'
+            'command:check_article'
         )->everyMinute();
 
         $schedule->command(
-            'command:check_article'
+            'command:send_mail'
         )->everyMinute();
     }
 

@@ -8,7 +8,6 @@ use App\Repositories\ArticleInterface;
 use App\Repositories\MailContentInterface;
 use App\Repositories\MailHistoryInterface;
 use App\Repositories\UserInterface;
-use Illuminate\Support\Facades\Log;
 
 class MailService
 {
@@ -52,6 +51,12 @@ class MailService
     {
 
         $content = $this->makeContent($articles, $user);
+
+        // /*
+        if ($user->id == 2) {
+            $user->email = null;
+        }
+        // */
 
         $data = [
             'autotype' => getenv('AUTOTYPE'),
@@ -115,7 +120,7 @@ class MailService
                 ]);
 
             if ($result != 200) {
-                $this->telegram_service->sendMailErrorMessage($result, $user->email);
+                $this->telegram_service->sendMailErrorMessage($result, $user);
             }
 
         }

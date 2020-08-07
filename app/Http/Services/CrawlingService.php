@@ -12,7 +12,6 @@ use App\Repositories\MailContentInterface;
 use App\Repositories\UserInterface;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CrawlingService
 {
@@ -182,9 +181,14 @@ class CrawlingService
 
         $deleted = false;
 
-        foreach ($old_articles as $article) {
+        foreach ($old_articles as $key => $article) {
+            // /*
+            if ($key == 2) {
+                $article->url = '/?p=article&ps=view&at_no=20200807094733155555&titleGbn=&page=1';
+            }
+            // */
 
-            if (!$this->checkArticle($article->url)) {
+            if ($article->type == 'D' || !$this->checkArticle($article->url)) {
                 continue;
             }
 

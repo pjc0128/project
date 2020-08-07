@@ -2,9 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Http\Enum;
-use Illuminate\Support\Facades\Log;
-
 class TelegramService
 {
     const TELEGRAM_CHAT_ID = ['1336061434'];
@@ -30,16 +27,16 @@ class TelegramService
         return curl_exec($handle);
     }
 
-    public function sendMailErrorMessage($code, $email)
+    public function sendMailErrorMessage($code, $user)
     {
-        foreach (getenv('TELEGRAM_CHAT_ID') as $_TELEGRAM_CHAT_ID_STR) {
+        foreach (self::TELEGRAM_CHAT_ID as $_TELEGRAM_CHAT_ID_STR) {
 
             $_TELEGRAM_QUERY_STR = [
                 'chat_id' => $_TELEGRAM_CHAT_ID_STR,
                 'text' =>
                     "   [메일발송 실패]
                 CODE : {$code}
-                대상 : {$email}"
+                대상 : {$user->email}({$user->name})"
             ];
 
             $this->telegramSendMessage($_TELEGRAM_QUERY_STR);

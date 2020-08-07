@@ -250,7 +250,7 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    label: "Articles",
+                    label: "Access",
                     lineTension: 0.3,
                     backgroundColor: "rgba(78, 115, 223, 0.05)",
                     borderColor: "rgb(78,115,223)",
